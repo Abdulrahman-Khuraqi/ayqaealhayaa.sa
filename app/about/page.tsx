@@ -43,7 +43,7 @@ export default function AboutPage() {
               <Link className="btn btn-outline-dark" href="/programming/">الخدمات الرقمية</Link>
             </div>
           </div>
-          <dl className="facts" aria-label="بيانات المنشأة">
+          <dl data-reveal className="facts" aria-label="بيانات المنشأة">
             {facts.map(({ icon: FactIcon, label, value, href, ltr }) => (
               <div key={label}>
                 <dt><FactIcon size={17} aria-hidden="true" /> {label}</dt>
@@ -60,7 +60,7 @@ export default function AboutPage() {
             <h2>وضوح. التزام. <em>متابعة</em>.</h2>
             <p>ثلاث كلمات نقيس بها كل طلب، من شريحة إنترنت إلى نظام برمجي متكامل.</p>
           </div>
-          <ol className="process-list">
+          <ol className="process-list" data-stagger>
             <li><div><h3>الوضوح</h3><p>أسعار شاملة الضريبة، ومواصفات مكتوبة، وعرض سعر قبل أي التزام.</p></div></li>
             <li><div><h3>الالتزام</h3><p>مواعيد تسليم معلنة، وإبلاغ مسبق بأي تأخير، وسياسات تحفظ حقك.</p></div></li>
             <li><div><h3>المتابعة</h3><p>ضمان ودعم بعد البيع، لأن العلاقة لا تنتهي عند الدفع.</p></div></li>

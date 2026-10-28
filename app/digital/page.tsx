@@ -33,7 +33,7 @@ export default function DigitalPage() {
           {order.map((category) => (
             <div key={category} className="group-block">
               <div className="group-head"><h2>{category}</h2><p>{intros[category]}</p></div>
-              <div className="offer-grid">
+              <div className="offer-grid" data-stagger>
                 {digitalProducts.filter((p) => p.category === category).map((product) => (
                   <OfferCard
                     key={product.id}

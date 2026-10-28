@@ -1,10 +1,13 @@
 import Link from 'next/link';
 import {
-  ArrowLeft, BadgePercent, Camera, Code2, Headset, MessageCircle, PackageCheck, Receipt, Server, ShieldCheck, Sparkles, Truck, Wand2,
+  ArrowLeft, Camera, Code2, Headset, MessageCircle, PackageCheck, Receipt, RotateCcw, Server, ShieldCheck, Truck, Wand2,
 } from 'lucide-react';
-import ProductCard from '@/components/ProductCard';
+import Faq from '@/components/Faq';
+import HeroScene from '@/components/HeroScene';
 import ProductImage from '@/components/ProductImage';
+import ProductShowcase, { type ShowcaseTab } from '@/components/ProductShowcase';
 import { categoryCover, getCategory, maxOfferDiscount, productCount, productsIn, storeCategories, topOffers } from '@/lib/catalog';
+import { homeFaq } from '@/data/faq';
 import { websitePackages } from '@/data/services';
 import { hostingFamilies } from '@/data/hosting';
 import { digitalProducts } from '@/data/digital';
@@ -13,8 +16,23 @@ import { site, whatsappLink } from '@/lib/site';
 
 const minPrice = (values: number[]) => Math.min(...values);
 
+function showcaseTabs(): ShowcaseTab[] {
+  const pick = (slug: string, label: string): ShowcaseTab | null => {
+    const category = getCategory(slug);
+    if (!category) return null;
+    const products = productsIn(category).filter((p) => p.available && p.image).slice(0, 8);
+    return products.length ? { id: slug, label, href: `/store/${slug}/`, products } : null;
+  };
+  return [
+    { id: 'offers', label: 'الأعلى خصمًا', href: '/store/offers/', products: topOffers(8) },
+    pick('cctv', 'كاميرات المراقبة'),
+    pick('wifi-cameras', 'كاميرات واي فاي'),
+    pick('smart-home', 'المنزل الذكي'),
+    pick('networking', 'الشبكات'),
+  ].filter((t): t is ShowcaseTab => Boolean(t));
+}
+
 export default function HomePage() {
-  const offers = topOffers(8);
   const tileCategories = storeCategories.filter((c) => c.slug !== 'offers' && c.slug !== 'wholesale');
   const installCategory = getCategory('installation');
   const installFrom = installCategory ? minPrice(productsIn(installCategory).filter((p) => p.price > 1).map((p) => p.price)) : 0;
@@ -22,79 +40,62 @@ export default function HomePage() {
   const simFrom = simCategory ? minPrice(productsIn(simCategory).filter((p) => p.available).map((p) => p.price)) : 0;
   const hostingFrom = minPrice(hostingFamilies[0].plans.map((p) => p.monthly));
   const digitalFrom = minPrice(digitalProducts.map((p) => p.price));
-  const heroProduct = offers[0];
 
   const pillars = [
-    { href: '/store/', icon: Camera, title: 'الأجهزة الأمنية والذكية', copy: 'كاميرات مراقبة، انتركوم، شبكات، منزل ذكي وشرائح إنترنت من ماركات موثوقة.', from: `${productCount} منتجًا`, label: 'تصفح المتجر' },
-    { href: '/programming/', icon: Code2, title: 'البرمجة والتطوير', copy: 'مواقع، متاجر، تطبيقات جوال وأنظمة مخصصة بتقنيات حديثة وتسليم موثق.', from: `من ${formatPrice(websitePackages[0].price)}`, label: 'الخدمات' },
-    { href: '/hosting/', icon: Server, title: 'الاستضافة والنطاقات', copy: 'استضافة مواقع، ووردبريس مُدارة، خوادم VPS وبريد أعمال باسم نطاقك.', from: `من ${formatPrice(hostingFrom)} شهريًا`, label: 'الخطط' },
-    { href: '/digital/', icon: Wand2, title: 'المنتجات الرقمية', copy: 'شهادات SSL، قوالب جاهزة، أنظمة سحابية ومخططات كاميرات تُسلَّم إلكترونيًا.', from: `من ${formatPrice(digitalFrom)}`, label: 'المنتجات' },
+    { href: '/store/', icon: Camera, n: '01', title: 'الأجهزة الأمنية والذكية', copy: 'كاميرات مراقبة، انتركوم، شبكات، منزل ذكي وشرائح إنترنت من ماركات موثوقة.', from: `${productCount} منتجًا`, label: 'تصفح المتجر' },
+    { href: '/programming/', icon: Code2, n: '02', title: 'البرمجة والتطوير', copy: 'مواقع، متاجر، تطبيقات جوال وأنظمة مخصصة بتقنيات حديثة وتسليم موثق.', from: `من ${formatPrice(websitePackages[0].price)}`, label: 'الخدمات' },
+    { href: '/hosting/', icon: Server, n: '03', title: 'الاستضافة والنطاقات', copy: 'استضافة مواقع، ووردبريس مُدارة، خوادم VPS وبريد أعمال باسم نطاقك.', from: `من ${formatPrice(hostingFrom)} شهريًا`, label: 'الخطط' },
+    { href: '/digital/', icon: Wand2, n: '04', title: 'المنتجات الرقمية', copy: 'شهادات SSL، قوالب جاهزة، أنظمة سحابية ومخططات كاميرات تُسلَّم إلكترونيًا.', from: `من ${formatPrice(digitalFrom)}`, label: 'المنتجات' },
+  ];
+
+  const perks = [
+    { icon: Truck, text: site.shippingNotice },
+    { icon: Receipt, text: 'فاتورة ضريبية لكل طلب' },
+    { icon: RotateCcw, text: `استرجاع خلال ${site.returnDays} أيام` },
+    { icon: ShieldCheck, text: 'ضمان الوكيل على الأجهزة' },
+    { icon: Headset, text: 'دعم فني بالعربي' },
+    { icon: PackageCheck, text: 'تركيب واستلام موثق' },
   ];
 
   return (
     <>
-      <section className="hero on-dark">
-        <div className="container hero-inner">
-          <div>
-            <span className="eyebrow-pill"><Sparkles size={15} aria-hidden="true" /> شركة سعودية للتقنية والحلول الرقمية</span>
-            <h1>تقنية تحمي <em>يومك</em>، وحلول رقمية تبني <em>أعمالك</em>.</h1>
-            <p className="hero-copy">أجهزة مراقبة وشبكات ومنزل ذكي بأسعار واضحة، إلى جانب برمجة المواقع والتطبيقات واستضافتها. كل ذلك من جهة واحدة تعرفك وتتابع معك.</p>
-            <div className="hero-ctas">
-              <Link href="/store/" className="btn btn-primary">تسوّق الأجهزة <ArrowLeft size={18} aria-hidden="true" /></Link>
-              <Link href="/programming/" className="btn btn-ghost">اطلب خدمة برمجية <Code2 size={18} aria-hidden="true" /></Link>
-            </div>
-            <div className="hero-stats">
-              <div><strong>{productCount}+</strong><span>منتج في المتجر</span></div>
-              <div><strong>{maxOfferDiscount}%</strong><span>أعلى خصم حالي</span></div>
-              <div><strong>{site.returnDays} أيام</strong><span>للاستبدال والاسترجاع</span></div>
-            </div>
-          </div>
-          <div className="hero-visual" aria-hidden="true">
-            <div className="hero-ring" />
-            <div className="hero-ring r2" />
-            <div className="hero-logo"><img src="/logo.webp" alt="" /></div>
-            <div className="float-card f1"><Truck size={22} /><div><b>شحن مجاني</b><span>لكل مدن المملكة</span></div></div>
-            <div className="float-card f2"><ShieldCheck size={22} /><div><b>دفع آمن</b><span>مدى · Apple Pay</span></div></div>
-            {heroProduct && <div className="float-card f3"><BadgePercent size={22} /><div><b>وفّر {heroProduct.discount}%</b><span>على عروض مختارة</span></div></div>}
-          </div>
+      <HeroScene productCount={productCount} maxDiscount={maxOfferDiscount} returnDays={site.returnDays} />
+
+      <section className="perk-band" aria-label="مزايا الشراء">
+        <div className="perk-track" data-marquee="1">
+          {[...perks, ...perks].map(({ icon: PerkIcon, text }, i) => (
+            <span key={i}><PerkIcon size={18} aria-hidden="true" /> {text}</span>
+          ))}
         </div>
       </section>
 
-      <section className="intro-band" aria-label="مزايا الشراء">
-        <div className="container">
-          <ul>
-            <li><Truck size={18} aria-hidden="true" /> {site.shippingNotice}</li>
-            <li><Receipt size={18} aria-hidden="true" /> فاتورة ضريبية لكل طلب</li>
-            <li><PackageCheck size={18} aria-hidden="true" /> استرجاع خلال {site.returnDays} أيام</li>
-            <li><Headset size={18} aria-hidden="true" /> دعم فني بالعربي</li>
-          </ul>
-        </div>
-      </section>
-
-      <section className="section section-dark on-dark">
-        <div className="container">
-          <div className="section-head">
-            <div>
-              <p className="kicker">ماذا نقدم</p>
-              <h2>أربعة مسارات، <em>وجهة واحدة</em>.</h2>
+      <div className="zoom-stage">
+        <section className="section section-dark on-dark zoom-panel" data-zoom>
+          <div className="container" data-zoom-content>
+            <div className="section-head" data-reveal>
+              <div>
+                <p className="kicker">ماذا نقدم</p>
+                <h2>أربعة مسارات، <em>وجهة واحدة</em>.</h2>
+              </div>
+              <p>ابدأ من المسار الذي يناسبك؛ كثير من عملائنا يجمعون بين الأجهزة والخدمات الرقمية في طلب واحد.</p>
             </div>
-            <p>ابدأ من المسار الذي يناسبك؛ كثير من عملائنا يجمعون بين الأجهزة والخدمات الرقمية في طلب واحد.</p>
+            <div className="pillars" data-tilt-in>
+              {pillars.map(({ href, icon: PillarIcon, n, title, copy, from, label }) => (
+                <Link key={href} href={href} className="pillar">
+                  <span className="pillar-n">{n}</span>
+                  <span className="pillar-icon"><PillarIcon size={26} strokeWidth={1.5} aria-hidden="true" /></span>
+                  <h3>{title}</h3>
+                  <p>{copy}</p>
+                  <span className="pillar-foot"><b>{from}</b><span className="text-link">{label} <ArrowLeft size={16} aria-hidden="true" /></span></span>
+                </Link>
+              ))}
+            </div>
           </div>
-          <div className="pillars">
-            {pillars.map(({ href, icon: PillarIcon, title, copy, from, label }) => (
-              <Link key={href} href={href} className="pillar">
-                <span className="pillar-icon"><PillarIcon size={24} strokeWidth={1.6} aria-hidden="true" /></span>
-                <h3>{title}</h3>
-                <p>{copy}</p>
-                <span className="pillar-foot"><span><b>{from}</b></span><span className="text-link">{label} <ArrowLeft size={16} aria-hidden="true" /></span></span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
+      </div>
 
       <section className="section-tight section-sand" aria-label="عروض مختارة">
-        <div className="container promo-row">
+        <div className="container promo-row" data-stagger>
           <Link href="/store/offers/" className="promo p-bronze">
             <div>
               <small>عروض وتخفيضات</small>
@@ -120,74 +121,81 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="section section-sand">
+      <section className="section section-sand showcase-section">
         <div className="container">
-          <div className="section-head">
+          <div className="section-head" data-reveal>
+            <div>
+              <p className="kicker">من المتجر</p>
+              <h2>منتجات مختارة <em>بعناية</em>.</h2>
+            </div>
+            <p>أسعار شاملة الضريبة، شحن مجاني، وضمان الوكيل. بدّل بين المجموعات لتجد ما يناسبك.</p>
+          </div>
+          <ProductShowcase tabs={showcaseTabs()} />
+        </div>
+      </section>
+
+      <section className="big-type" aria-hidden="true">
+        <div className="big-row" data-marquee="1"><span>كاميرات مراقبة</span><i /><span>شبكات</span><i /><span>منزل ذكي</span><i /><span>انتركوم</span><i /><span>كاميرات مراقبة</span><i /><span>شبكات</span></div>
+        <div className="big-row outline" data-marquee="-1"><span>برمجة</span><i /><span>استضافة</span><i /><span>متاجر إلكترونية</span><i /><span>تطبيقات</span><i /><span>برمجة</span><i /><span>استضافة</span></div>
+      </section>
+
+      <section className="section section-paper">
+        <div className="container">
+          <div className="section-head" data-reveal>
             <div>
               <p className="kicker">أقسام المتجر</p>
               <h2>اختر الحل المناسب <em>لمساحتك</em>.</h2>
             </div>
             <Link href="/store/" className="text-link">كل المنتجات <ArrowLeft size={16} aria-hidden="true" /></Link>
           </div>
-          <div className="category-grid">
+          <div className="category-grid" data-tilt-in>
             {tileCategories.map((category) => (
               <Link key={category.slug} href={`/store/${category.slug}/`} className="category-tile">
                 <span className="tile-img"><ProductImage src={categoryCover(category)} alt="" /></span>
-                <span className="tile-body"><h3>{category.name}</h3><span>{category.productIds.length} منتج</span></span>
+                <span className="tile-body"><h3>{category.name}</h3><span>{category.productIds.length} منتج <ArrowLeft size={14} aria-hidden="true" /></span></span>
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="section section-paper">
-        <div className="container">
-          <div className="section-head">
-            <div>
-              <p className="kicker">الأعلى خصمًا الآن</p>
-              <h2>عروض <em>لا تتكرر</em> كثيرًا.</h2>
+      <div className="zoom-stage zoom-stage-paper">
+        <section className="section section-dark on-dark zoom-panel" data-zoom>
+          <div className="glow-orb" data-parallax="0.35" aria-hidden="true" />
+          <div className="container" data-zoom-content>
+            <div className="section-head" data-reveal>
+              <div>
+                <p className="kicker">باقات المواقع</p>
+                <h2>موقعك جاهز <em>بسعر معلن</em>.</h2>
+              </div>
+              <Link href="/programming/" className="text-link">كل الخدمات البرمجية <ArrowLeft size={16} aria-hidden="true" /></Link>
             </div>
-            <Link href="/store/offers/" className="text-link">كل العروض <ArrowLeft size={16} aria-hidden="true" /></Link>
-          </div>
-          <div className="product-grid">
-            {offers.map((product) => <ProductCard key={product.id} product={product} />)}
-          </div>
-        </div>
-      </section>
-
-      <section className="section section-dark on-dark">
-        <div className="container">
-          <div className="section-head">
-            <div>
-              <p className="kicker">باقات المواقع</p>
-              <h2>موقعك جاهز <em>بسعر معلن</em>.</h2>
+            <div className="tiers" data-tilt-in>
+              {websitePackages.map((pkg) => (
+                <article key={pkg.id} className={`tier ${pkg.featured ? 'featured' : ''}`}>
+                  {pkg.featured && <span className="tier-flag">الأكثر اختيارًا</span>}
+                  <h3>{pkg.name}</h3>
+                  <p className="tier-pitch">{pkg.pitch}</p>
+                  <div className="tier-price"><span className="from">يبدأ من</span><strong>{formatPrice(pkg.price)}</strong></div>
+                  <div className="tier-meta"><span>{pkg.delivery}</span><span>{pkg.support}</span></div>
+                  <Link href={`/programming/#${pkg.id}`} className={`btn ${pkg.featured ? 'btn-primary' : 'btn-ghost'}`}>تفاصيل الباقة <ArrowLeft size={18} aria-hidden="true" /></Link>
+                </article>
+              ))}
             </div>
-            <Link href="/programming/" className="text-link">كل الخدمات البرمجية <ArrowLeft size={16} aria-hidden="true" /></Link>
           </div>
-          <div className="tiers">
-            {websitePackages.map((pkg) => (
-              <article key={pkg.id} className={`tier ${pkg.featured ? 'featured' : ''}`}>
-                {pkg.featured && <span className="tier-flag">الأكثر اختيارًا</span>}
-                <h3>{pkg.name}</h3>
-                <p className="tier-pitch">{pkg.pitch}</p>
-                <div className="tier-price"><span className="from">يبدأ من</span><strong>{formatPrice(pkg.price)}</strong></div>
-                <div className="tier-meta"><span>{pkg.delivery}</span><span>{pkg.support}</span></div>
-                <Link href={`/programming/#${pkg.id}`} className={`btn ${pkg.featured ? 'btn-primary' : 'btn-ghost'}`}>تفاصيل الباقة <ArrowLeft size={18} aria-hidden="true" /></Link>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
+      </div>
 
-      <section className="section section-darker on-dark">
+      <section className="section section-darker on-dark process-section">
+        <div className="glow-orb right" data-parallax="0.5" aria-hidden="true" />
         <div className="container process">
-          <div className="process-side">
+          <div className="process-side" data-reveal>
             <p className="kicker">كيف نعمل</p>
             <h2>اتجاه واضح. <em>تنفيذ أدق</em>.</h2>
             <p>سواء طلبت كاميرا أو نظامًا برمجيًا، نتبع المسار نفسه: نفهم، نقترح، ننفذ، ثم نبقى معك.</p>
             <a href={whatsappLink('مرحبًا، أحتاج استشارة لاختيار الحل المناسب.')} target="_blank" rel="noreferrer" className="btn btn-ghost">استشارة مجانية عبر واتساب <MessageCircle size={18} aria-hidden="true" /></a>
           </div>
-          <ol className="process-list">
+          <ol className="process-list" data-stagger>
             <li><div><h3>نفهم احتياجك</h3><p>محادثة قصيرة عن المساحة أو المشروع والميزانية والأولويات.</p></div></li>
             <li><div><h3>نقترح الحل والسعر</h3><p>عرض واضح بالأجهزة أو نطاق العمل، والسعر شامل الضريبة دون مفاجآت.</p></div></li>
             <li><div><h3>ننفذ ونسلّم</h3><p>شحن مجاني أو تركيب ميداني، أو تسليم برمجي على مراحل معتمدة.</p></div></li>
@@ -198,20 +206,8 @@ export default function HomePage() {
 
       <section className="section section-sand">
         <div className="container">
-          <div className="section-head">
-            <div>
-              <p className="kicker">أسئلة شائعة</p>
-              <h2>قبل أن <em>تطلب</em>.</h2>
-            </div>
-          </div>
-          <div className="faq">
-            <details><summary>هل الأسعار شاملة الضريبة؟</summary><p>نعم، جميع الأسعار بالريال السعودي وشاملة ضريبة القيمة المضافة 15%، ونصدر فاتورة ضريبية باسم {site.legalName} لكل طلب.</p></details>
-            <details><summary>كيف أدفع؟</summary><p>بعد إرسال الطلب نؤكده معك ونرسل رابط دفع آمن يدعم مدى وفيزا وماستركارد وApple Pay، أو نوفر بيانات التحويل البنكي الرسمي. لا نطلب بيانات بطاقتك أبدًا عبر المحادثة.</p></details>
-            <details><summary>كم يستغرق التوصيل؟</summary><p>الرياض خلال 1–3 أيام عمل، والمدن الرئيسية 2–5 أيام عمل، والشحن مجاني لجميع مدن المملكة. التفاصيل في <Link className="text-link" href="/legal/shipping/">سياسة الشحن</Link>.</p></details>
-            <details><summary>هل تقدمون التركيب؟</summary><p>نعم، لدينا خدمات تركيب الكاميرات والانتركوم وأجهزة الشبكات مع ضمان على أعمال التركيب 3 أشهر. اختر الخدمة من قسم خدمات التركيب أو تواصل معنا لمشروع منشأة.</p></details>
-            <details><summary>هل أملك الكود المصدري لموقعي؟</summary><p>نعم، تنتقل ملكية التصاميم والكود المخصص إليك بعد سداد كامل المستحقات، وفق <Link className="text-link" href="/legal/services-terms/">شروط الخدمات البرمجية</Link>.</p></details>
-          </div>
-          <div className="cta-band mt-lg">
+          <Faq groups={homeFaq} title={<>كل ما تريد معرفته <em>قبل أن تطلب</em>.</>} intro="جمعنا أكثر الأسئلة التي تصلنا عن الطلب والشحن والخدمات الرقمية. اختر التصنيف ثم السؤال." />
+          <div className="cta-band mt-xl" data-zoom-in>
             <div>
               <h2>لم تجد ما تبحث عنه؟</h2>
               <p>أخبرنا بما تحتاجه، وسنقترح عليك الجهاز أو الخدمة المناسبة مع عرض سعر واضح خلال يوم عمل.</p>

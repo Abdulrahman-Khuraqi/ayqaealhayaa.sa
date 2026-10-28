@@ -22,13 +22,13 @@ export default function ContactPage() {
       <section className="section section-sand">
         <div className="container split">
           <div className="stack-sm">
-            <div className="contact-cards">
+            <div className="contact-cards" data-stagger>
               <a className="contact-card" href={whatsappLink()} target="_blank" rel="noreferrer"><span className="offer-icon"><MessageCircle size={20} aria-hidden="true" /></span><span><small>واتساب (الأسرع)</small><b><bdi dir="ltr">{site.phone}</bdi></b></span></a>
               <a className="contact-card" href={`mailto:${site.email}`}><span className="offer-icon"><Mail size={20} aria-hidden="true" /></span><span><small>البريد الإلكتروني</small><b>{site.email}</b></span></a>
               <div className="contact-card"><span className="offer-icon"><Clock3 size={20} aria-hidden="true" /></span><span><small>أوقات العمل</small><b>{site.hours}</b></span></div>
               <div className="contact-card"><span className="offer-icon"><MapPin size={20} aria-hidden="true" /></span><span><small>العنوان</small><b>{site.address}</b></span></div>
             </div>
-            <dl className="facts">
+            <dl data-reveal className="facts">
               <div><dt>الاسم التجاري</dt><dd>{site.legalName}</dd></div>
               <div><dt>السجل التجاري</dt><dd><bdi dir="ltr">{site.commercialRegistration}</bdi></dd></div>
               <div><dt>الرقم الضريبي</dt><dd><bdi dir="ltr">{site.vatNumber}</bdi></dd></div>

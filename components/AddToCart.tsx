@@ -9,7 +9,7 @@ type Props = {
   label?: string;
   disabled?: boolean;
   disabledLabel?: string;
-  variant?: 'solid' | 'outline' | 'icon';
+  variant?: 'solid' | 'outline' | 'icon' | 'card';
   withQuantity?: boolean;
   className?: string;
 };
@@ -24,6 +24,15 @@ export default function AddToCart({ item, label = 'أضف إلى السلة', di
     setAdded(true);
     window.setTimeout(() => setAdded(false), 1400);
   };
+
+  if (variant === 'card') {
+    return (
+      <button type="button" className={`card-add ${added ? 'is-added' : ''} ${className}`} onClick={onAdd} disabled={disabled} aria-label={disabled ? disabledLabel : `${label}: ${item.name}`}>
+        <span>{disabled ? disabledLabel : added ? 'تمت الإضافة' : label}</span>
+        <i aria-hidden="true">{added ? <Check size={16} /> : <ShoppingBag size={16} />}</i>
+      </button>
+    );
+  }
 
   if (variant === 'icon') {
     return (

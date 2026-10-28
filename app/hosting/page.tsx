@@ -35,8 +35,8 @@ export default function HostingPage() {
 
       <section className="section section-dark on-dark">
         <div className="container">
-          <div className="section-head"><div><p className="kicker">في كل الخطط</p><h2>أساسيات <em>لا تُباع منفصلة</em>.</h2></div></div>
-          <div className="feature-strip">
+          <div className="section-head" data-reveal><div><p className="kicker">في كل الخطط</p><h2>أساسيات <em>لا تُباع منفصلة</em>.</h2></div></div>
+          <div className="feature-strip" data-stagger>
             <div><Zap size={24} aria-hidden="true" /><h3>أقراص NVMe</h3><p>تحميل أسرع للصفحات وقواعد البيانات مقارنة بالأقراص التقليدية.</p></div>
             <div><LockKeyhole size={24} aria-hidden="true" /><h3>SSL مجاني</h3><p>تفعيل تلقائي وتجديد دون تدخل منك.</p></div>
             <div><ArchiveRestore size={24} aria-hidden="true" /><h3>نسخ احتياطي</h3><p>نسخ دورية واسترجاع بطلب بسيط للدعم.</p></div>
@@ -51,7 +51,7 @@ export default function HostingPage() {
             <div><p className="kicker">النطاقات</p><h2>احجز اسمك <em>قبل غيرك</em>.</h2></div>
             <p>نسجل النطاق باسمك أنت، ونسلمك رمز النقل متى طلبته. أرسل لنا الاسم المطلوب مع الطلب ونتحقق من توفره.</p>
           </div>
-          <div className="table-wrap">
+          <div className="table-wrap" data-reveal>
             <table className="data-table">
               <thead><tr><th>الامتداد</th><th>التسجيل (سنة)</th><th>التجديد</th><th><span className="sr-only">إضافة</span></th></tr></thead>
               <tbody>

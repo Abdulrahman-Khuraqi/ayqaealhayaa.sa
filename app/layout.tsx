@@ -3,6 +3,7 @@ import { Changa, IBM_Plex_Sans_Arabic } from 'next/font/google';
 import { CartProvider } from '@/components/CartProvider';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import MotionProvider from '@/components/MotionProvider';
 import { storeCategories } from '@/lib/catalog';
 import { site } from '@/lib/site';
 import './globals.css';
@@ -39,9 +40,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <a href="#main" className="skip-link">انتقل إلى المحتوى</a>
         <CartProvider>
-          <Header categories={storeCategories.map(({ slug, name }) => ({ slug, name }))} />
-          <main id="main">{children}</main>
-          <Footer />
+          <MotionProvider>
+            <Header categories={storeCategories.map(({ slug, name }) => ({ slug, name }))} />
+            <main id="main">{children}</main>
+            <Footer />
+          </MotionProvider>
         </CartProvider>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationLd) }} />
       </body>
