@@ -1,0 +1,14 @@
+{
+  "publicUrl": "https://pay.ayqaealhayaa.sa",
+  "environment": "staging",
+  "adminUser": "admin",
+  "adminPassword": "CHANGE-ME",
+  "sessionSecret": "CHANGE-ME-long-random-text",
+  "storeName": { "ar": "إيقاع الحياة", "en": "Ayqaa Alhayah" },
+  "mainSite": "https://ayqaealhayaa.sa",
+  "storeUrl": "https://ayqaealhayaa.sa",
+  "whatsapp": "966556837749",
+  "phone": "0556837749",
+  "handoffSecret": "SAME-AS-WEBSITE-PAY_HANDOFF_SECRET",
+  "amount": { "min": 1, "max": 20000 }
+}

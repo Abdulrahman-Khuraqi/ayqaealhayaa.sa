@@ -1,0 +1,19 @@
+Options -Indexes
+DirectoryIndex index.php
+
+# Settings, credentials and orders are never served.
+<FilesMatch "^(config\.json|info-client\.txt|README\.md|cron\.php)$">
+  Require all denied
+</FilesMatch>
+
+RewriteEngine On
+RewriteRule ^(lib|data)(/|$) - [F,L]
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^public/ - [L]
+RewriteRule ^ index.php [L,QSA]
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(css|js|png)$">
+    Header set Cache-Control "public, max-age=3600"
+  </FilesMatch>
+</IfModule>

@@ -1,0 +1,11 @@
+Merchant ID
+	YOUR-MERCHANT-ID
+
+Authentication Token
+	YOUR-AUTHENTICATION-TOKEN
+
+SR URL (Inquiry)
+	https://PAYONE-INQUIRY-URL
+
+SR URL (Payment)
+	https://PAYONE-PAYMENT-URL

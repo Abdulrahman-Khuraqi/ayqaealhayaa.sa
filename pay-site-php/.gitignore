@@ -1,0 +1,5 @@
+# Secrets and live data stay on the server only
+config.json
+info-client.txt
+data/*
+!data/.htaccess
