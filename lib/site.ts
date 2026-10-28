@@ -4,6 +4,8 @@ export const site = {
   legalName: 'شركة إيقاع الحياة',
   tagline: 'تقنية تحمي يومك، وحلول رقمية تبني أعمالك',
   url: 'https://ayqaealhayaa.sa',
+  /** موقع الدفع (PayOne): تُرسل إليه السلة عند إتمام الطلب. */
+  payUrl: 'https://pay.ayqaealhayaa.sa',
   commercialRegistration: '7033944427',
   vatNumber: '311685924700003',
   vatRate: 0.15,
@@ -23,9 +25,6 @@ export const whatsappLink = (text?: string) =>
 
 export const mainNav = [
   { href: '/store/', label: 'المتجر' },
-  { href: '/programming/', label: 'البرمجة' },
-  { href: '/hosting/', label: 'الاستضافة' },
-  { href: '/digital/', label: 'المنتجات الرقمية' },
   { href: '/about/', label: 'من نحن' },
   { href: '/contact/', label: 'تواصل معنا' },
 ] as const;

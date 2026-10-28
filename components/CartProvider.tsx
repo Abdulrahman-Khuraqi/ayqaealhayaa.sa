@@ -40,7 +40,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-      if (Array.isArray(stored)) setLines(stored);
+      // العودة من موقع الدفع بعد نجاح الدفع (?paid=رقم الطلب): نفرغ السلة.
+      const url = new URL(window.location.href);
+      if (url.searchParams.has('paid')) {
+        url.searchParams.delete('paid');
+        window.history.replaceState(null, '', url.pathname + url.search + url.hash);
+      } else if (Array.isArray(stored)) {
+        // الخدمات الرقمية لم تعد تُباع من الموقع؛ نبقي المنتجات فقط.
+        setLines(stored.filter((line: CartLine) => line?.kind === 'product'));
+      }
     } catch {
       // سلة تالفة أو تخزين محجوب: نبدأ بسلة فارغة.
     }

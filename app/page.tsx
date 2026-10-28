@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import {
-  ArrowLeft, Camera, Code2, Headset, MessageCircle, PackageCheck, Receipt, RotateCcw, Server, ShieldCheck, Truck, Wand2,
+  ArrowLeft, Headset, MessageCircle, PackageCheck, Receipt, RotateCcw, ShieldCheck, Truck,
 } from 'lucide-react';
 import Faq from '@/components/Faq';
 import HeroScene from '@/components/HeroScene';
@@ -8,9 +8,6 @@ import ProductImage from '@/components/ProductImage';
 import ProductShowcase, { type ShowcaseTab } from '@/components/ProductShowcase';
 import { categoryCover, getCategory, maxOfferDiscount, productCount, productsIn, storeCategories, topOffers } from '@/lib/catalog';
 import { homeFaq } from '@/data/faq';
-import { websitePackages } from '@/data/services';
-import { hostingFamilies } from '@/data/hosting';
-import { digitalProducts } from '@/data/digital';
 import { formatPrice } from '@/lib/format';
 import { site, whatsappLink } from '@/lib/site';
 
@@ -38,16 +35,6 @@ export default function HomePage() {
   const installFrom = installCategory ? minPrice(productsIn(installCategory).filter((p) => p.price > 1).map((p) => p.price)) : 0;
   const simCategory = getCategory('sim-cards');
   const simFrom = simCategory ? minPrice(productsIn(simCategory).filter((p) => p.available).map((p) => p.price)) : 0;
-  const hostingFrom = minPrice(hostingFamilies[0].plans.map((p) => p.monthly));
-  const digitalFrom = minPrice(digitalProducts.map((p) => p.price));
-
-  const pillars = [
-    { href: '/store/', icon: Camera, n: '01', title: 'الأجهزة الأمنية والذكية', copy: 'كاميرات مراقبة، انتركوم، شبكات، منزل ذكي وشرائح إنترنت من ماركات موثوقة.', from: `${productCount} منتجًا`, label: 'تصفح المتجر' },
-    { href: '/programming/', icon: Code2, n: '02', title: 'البرمجة والتطوير', copy: 'مواقع، متاجر، تطبيقات جوال وأنظمة مخصصة بتقنيات حديثة وتسليم موثق.', from: `من ${formatPrice(websitePackages[0].price)}`, label: 'الخدمات' },
-    { href: '/hosting/', icon: Server, n: '03', title: 'الاستضافة والنطاقات', copy: 'استضافة مواقع، ووردبريس مُدارة، خوادم VPS وبريد أعمال باسم نطاقك.', from: `من ${formatPrice(hostingFrom)} شهريًا`, label: 'الخطط' },
-    { href: '/digital/', icon: Wand2, n: '04', title: 'المنتجات الرقمية', copy: 'شهادات SSL، قوالب جاهزة، أنظمة سحابية ومخططات كاميرات تُسلَّم إلكترونيًا.', from: `من ${formatPrice(digitalFrom)}`, label: 'المنتجات' },
-  ];
-
   const perks = [
     { icon: Truck, text: site.shippingNotice },
     { icon: Receipt, text: 'فاتورة ضريبية لكل طلب' },
@@ -68,31 +55,6 @@ export default function HomePage() {
           ))}
         </div>
       </section>
-
-      <div className="zoom-stage">
-        <section className="section section-dark on-dark zoom-panel" data-zoom>
-          <div className="container" data-zoom-content>
-            <div className="section-head" data-reveal>
-              <div>
-                <p className="kicker">ماذا نقدم</p>
-                <h2>أربعة مسارات، <em>وجهة واحدة</em>.</h2>
-              </div>
-              <p>ابدأ من المسار الذي يناسبك؛ كثير من عملائنا يجمعون بين الأجهزة والخدمات الرقمية في طلب واحد.</p>
-            </div>
-            <div className="pillars" data-tilt-in>
-              {pillars.map(({ href, icon: PillarIcon, n, title, copy, from, label }) => (
-                <Link key={href} href={href} className="pillar">
-                  <span className="pillar-n">{n}</span>
-                  <span className="pillar-icon"><PillarIcon size={26} strokeWidth={1.5} aria-hidden="true" /></span>
-                  <h3>{title}</h3>
-                  <p>{copy}</p>
-                  <span className="pillar-foot"><b>{from}</b><span className="text-link">{label} <ArrowLeft size={16} aria-hidden="true" /></span></span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      </div>
 
       <section className="section-tight section-sand" aria-label="عروض مختارة">
         <div className="container promo-row" data-stagger>
@@ -158,33 +120,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      <div className="zoom-stage zoom-stage-paper">
-        <section className="section section-dark on-dark zoom-panel" data-zoom>
-          <div className="glow-orb" data-parallax="0.35" aria-hidden="true" />
-          <div className="container" data-zoom-content>
-            <div className="section-head" data-reveal>
-              <div>
-                <p className="kicker">باقات المواقع</p>
-                <h2>موقعك جاهز <em>بسعر معلن</em>.</h2>
-              </div>
-              <Link href="/programming/" className="text-link">كل الخدمات البرمجية <ArrowLeft size={16} aria-hidden="true" /></Link>
-            </div>
-            <div className="tiers" data-tilt-in>
-              {websitePackages.map((pkg) => (
-                <article key={pkg.id} className={`tier ${pkg.featured ? 'featured' : ''}`}>
-                  {pkg.featured && <span className="tier-flag">الأكثر اختيارًا</span>}
-                  <h3>{pkg.name}</h3>
-                  <p className="tier-pitch">{pkg.pitch}</p>
-                  <div className="tier-price"><span className="from">يبدأ من</span><strong>{formatPrice(pkg.price)}</strong></div>
-                  <div className="tier-meta"><span>{pkg.delivery}</span><span>{pkg.support}</span></div>
-                  <Link href={`/programming/#${pkg.id}`} className={`btn ${pkg.featured ? 'btn-primary' : 'btn-ghost'}`}>تفاصيل الباقة <ArrowLeft size={18} aria-hidden="true" /></Link>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-      </div>
 
       <section className="section section-darker on-dark process-section">
         <div className="glow-orb right" data-parallax="0.5" aria-hidden="true" />

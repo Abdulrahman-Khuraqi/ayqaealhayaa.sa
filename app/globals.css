@@ -83,6 +83,7 @@ bdi[dir='ltr'], [dir='ltr'] { unicode-bidi: isolate; }
 .btn-block { width: 100%; }
 .btn-sm { min-height: 40px; padding: 0 .95rem; font-size: .85rem; }
 .text-link { display: inline-flex; align-items: center; gap: .4rem; color: var(--bronze-700); font-weight: 700; }
+.wa-alt { justify-content: center; width: 100%; margin-top: .9rem; font-size: .9rem; }
 .text-link:hover { color: var(--bronze-600); }
 .on-dark .text-link { color: var(--bronze-300); }
 

@@ -40,7 +40,7 @@ export default function AboutPage() {
             <p>نؤمن أن الثقة تُبنى بالوضوح: سعر معلن، فاتورة ضريبية، سياسات مكتوبة، ودعم يرد عليك بالعربي.</p>
             <div className="hero-ctas">
               <Link className="btn btn-primary" href="/store/">تصفح المتجر <ArrowLeft size={18} aria-hidden="true" /></Link>
-              <Link className="btn btn-outline-dark" href="/programming/">الخدمات الرقمية</Link>
+              <Link className="btn btn-outline-dark" href="/contact/">تواصل معنا</Link>
             </div>
           </div>
           <dl data-reveal className="facts" aria-label="بيانات المنشأة">

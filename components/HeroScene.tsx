@@ -5,7 +5,7 @@ import { useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
-import { ArrowLeft, BadgePercent, ChevronDown, Code2, Sparkles, Truck } from 'lucide-react';
+import { ArrowLeft, BadgePercent, ChevronDown, Sparkles, Truck } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -94,7 +94,6 @@ export default function HeroScene({ productCount, maxDiscount, returnDays }: Pro
           <p className="hero-copy hero-reveal">أجهزة مراقبة وشبكات ومنزل ذكي بأسعار واضحة، إلى جانب برمجة المواقع والتطبيقات واستضافتها. كل ذلك من جهة واحدة تعرفك وتتابع معك.</p>
           <div className="hero-ctas hero-reveal">
             <Link href="/store/" className="btn btn-primary btn-lg">تسوّق الأجهزة <ArrowLeft size={18} aria-hidden="true" /></Link>
-            <Link href="/programming/" className="btn btn-ghost btn-lg">اطلب خدمة برمجية <Code2 size={18} aria-hidden="true" /></Link>
           </div>
           <div className="hero-stats hero-reveal">
             <div><strong>{productCount}+</strong><span>منتج في المتجر</span></div>

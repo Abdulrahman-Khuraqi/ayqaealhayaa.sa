@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { CheckCircle2, Code2, Globe, Info, MessageCircle, Minus, Plus, Server, ShoppingBag, Trash2, Wand2 } from 'lucide-react';
+import { Code2, Globe, Info, Lock, MessageCircle, Minus, Plus, Server, ShoppingBag, Trash2, Wand2 } from 'lucide-react';
 import { useCart, type CartKind, type CartLine } from './CartProvider';
 import { SAUDI_MOBILE, formatPrice, vatPortion } from '@/lib/format';
 import { site, whatsappLink } from '@/lib/site';
@@ -13,65 +13,50 @@ const kindIcon: Record<Exclude<CartKind, 'product'>, React.ReactNode> = {
 };
 const cities = ['الرياض', 'جدة', 'مكة المكرمة', 'المدينة المنورة', 'الدمام', 'الخبر', 'الظهران', 'الأحساء', 'القصيم', 'أبها', 'خميس مشيط', 'تبوك', 'حائل', 'جازان', 'نجران', 'الطائف', 'الجبيل', 'ينبع', 'أخرى'];
 
-function orderRef() {
-  const d = new Date();
-  const stamp = `${String(d.getFullYear()).slice(2)}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
-  return `AYQ-${stamp}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+/** رقم مرجعي للسلة يمنع إنشاء الطلب مرتين إذا أُرسلت السلة نفسها مرة أخرى. */
+function cartRef() {
+  const bytes = crypto.getRandomValues(new Uint8Array(6));
+  return `WEB-${Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('').toUpperCase()}`;
 }
 
-function buildMessage(ref: string, lines: CartLine[], total: number, customer: Record<string, string>) {
-  const items = lines.map((line, i) => `${i + 1}. ${line.name}${line.note ? ` (${line.note})` : ''}\n   الكمية: ${line.quantity} × ${formatPrice(line.price)} = ${formatPrice(line.price * line.quantity)}`).join('\n');
-  return [
-    `طلب جديد من الموقع — ${ref}`,
-    '',
-    items,
-    '',
-    `الإجمالي: ${formatPrice(total)} (شامل ضريبة القيمة المضافة ${formatPrice(vatPortion(total))})`,
-    '',
-    `الاسم: ${customer.name}`,
-    `الجوال: ${customer.phone}`,
-    customer.email ? `البريد: ${customer.email}` : null,
-    `المدينة: ${customer.city}`,
-    customer.address ? `العنوان: ${customer.address}` : null,
-    customer.notes ? `ملاحظات: ${customer.notes}` : null,
-    '',
-    'أرجو تأكيد الطلب وإرسال رابط الدفع.',
-  ].filter((row) => row !== null).join('\n');
+/** ينقل العميل إلى موقع الدفع ومعه السلة والمبلغ وبياناته (نموذج POST لأن السلة قد تكون طويلة). */
+function goToPayment(lines: CartLine[], customer: Record<string, string>) {
+  const items = lines.map((line) => ({
+    id: Number(line.key.split(':')[1]),
+    name: line.name.slice(0, 180),
+    qty: line.quantity,
+    price: Math.round(line.price * 100),
+  }));
+  const cart = { v: 1, ref: cartRef(), currency: 'SAR', lang: 'ar', items, total: items.reduce((sum, i) => sum + i.price * i.qty, 0), customer };
+  const form = document.createElement('form');
+  form.method = 'post';
+  form.action = `${site.payUrl}/checkout`;
+  const field = document.createElement('input');
+  field.type = 'hidden';
+  field.name = 'cart';
+  field.value = JSON.stringify(cart);
+  form.appendChild(field);
+  document.body.appendChild(form);
+  form.submit();
 }
 
 export default function CartView() {
-  const { lines, total, ready, setQuantity, remove, clear } = useCart();
+  const { lines, total, ready, setQuantity, remove } = useCart();
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [sent, setSent] = useState<{ ref: string; message: string } | null>(null);
+  const [sending, setSending] = useState(false);
   const hasPhysical = lines.some((line) => line.kind === 'product');
-  const hasDomain = lines.some((line) => line.kind === 'domain');
   const hasQuoted = lines.some((line) => line.note?.startsWith('سعر ابتدائي'));
 
   if (!ready) return <div className="empty-state" aria-busy="true"><ShoppingBag size={40} aria-hidden="true" /><p>جارٍ تحميل السلة…</p></div>;
-
-  if (sent) {
-    return (
-      <div className="success-box">
-        <CheckCircle2 size={52} aria-hidden="true" />
-        <h2>تم تجهيز طلبك</h2>
-        <p>رقم الطلب <code>{sent.ref}</code>. أرسل الرسالة في واتساب وسنؤكد الطلب ونرسل لك رابط الدفع الآمن خلال أوقات العمل.</p>
-        <div className="hero-ctas">
-          <a className="btn btn-primary" href={whatsappLink(sent.message)} target="_blank" rel="noreferrer">فتح واتساب مرة أخرى <MessageCircle size={18} aria-hidden="true" /></a>
-          <Link className="btn btn-outline-dark" href="/store/">مواصلة التسوق</Link>
-        </div>
-      </div>
-    );
-  }
 
   if (lines.length === 0) {
     return (
       <div className="empty-state">
         <ShoppingBag size={44} aria-hidden="true" />
         <h3>السلة فارغة</h3>
-        <p>ابدأ من المتجر أو اختر خدمة رقمية؛ يمكنك جمع الأجهزة والخدمات في طلب واحد.</p>
+        <p>ابدأ من المتجر وأضف المنتجات التي تحتاجها، ثم أكمل الدفع بأمان.</p>
         <div className="hero-ctas">
           <Link className="btn btn-primary" href="/store/">تصفح المتجر</Link>
-          <Link className="btn btn-outline-dark" href="/programming/">الخدمات البرمجية</Link>
         </div>
       </div>
     );
@@ -85,19 +70,14 @@ export default function CartView() {
     const next: Record<string, string> = {};
     if (customer.name.length < 2) next.name = 'اكتب الاسم الكامل';
     if (!SAUDI_MOBILE.test(customer.phone)) next.phone = 'رقم جوال سعودي صحيح يبدأ بـ 05';
-    if (customer.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customer.email)) next.email = 'بريد إلكتروني غير صحيح';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(customer.email)) next.email = 'اكتب بريدًا إلكترونيًا صحيحًا لإرسال تأكيد الطلب';
     if (hasPhysical && customer.address.length < 6) next.address = 'أضف الحي واسم الشارع أو العنوان الوطني';
-    if (hasDomain && customer.notes.length < 3) next.notes = 'اكتب اسم النطاق المطلوب';
     if (!data.get('agree')) next.agree = 'يلزم الموافقة على الشروط والسياسات';
     setErrors(next);
     if (Object.keys(next).length) return;
 
-    const ref = orderRef();
-    const message = buildMessage(ref, lines, total, customer);
-    window.open(whatsappLink(message), '_blank', 'noopener,noreferrer');
-    setSent({ ref, message });
-    clear();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setSending(true);
+    goToPayment(lines, customer);
   };
 
   return (
@@ -142,7 +122,7 @@ export default function CartView() {
 
         <form className="form-card" onSubmit={onSubmit} noValidate>
           <h2>بيانات الطلب</h2>
-          <p className="hint">نرسل الطلب عبر واتساب، ثم نؤكده ونرسل رابط دفع آمن (مدى، فيزا، Apple Pay) أو بيانات التحويل البنكي.</p>
+          <p className="hint">بعد تعبئة البيانات ننقلك إلى صفحة الدفع الآمنة (مدى، فيزا، ماستركارد) بالمبلغ جاهزًا.</p>
           <label className="field">الاسم الكامل
             <input name="name" autoComplete="name" aria-invalid={Boolean(errors.name)} />
             {errors.name && <span className="field-error">{errors.name}</span>}
@@ -152,7 +132,7 @@ export default function CartView() {
               <input name="phone" type="tel" inputMode="tel" dir="ltr" autoComplete="tel" placeholder="05xxxxxxxx" aria-invalid={Boolean(errors.phone)} />
               {errors.phone && <span className="field-error">{errors.phone}</span>}
             </label>
-            <label className="field">البريد (اختياري)
+            <label className="field">البريد الإلكتروني
               <input name="email" type="email" dir="ltr" autoComplete="email" aria-invalid={Boolean(errors.email)} />
               {errors.email && <span className="field-error">{errors.email}</span>}
             </label>
@@ -166,8 +146,8 @@ export default function CartView() {
               {errors.address && <span className="field-error">{errors.address}</span>}
             </label>
           )}
-          <label className="field">{hasDomain ? 'اسم النطاق وملاحظات' : 'ملاحظات (اختياري)'}
-            <textarea name="notes" placeholder={hasDomain ? 'مثال: mystore.sa' : 'وقت مناسب للتواصل، تفاصيل المشروع…'} aria-invalid={Boolean(errors.notes)} />
+          <label className="field">ملاحظات (اختياري)
+            <textarea name="notes" maxLength={500} placeholder="وقت مناسب للتوصيل أو التواصل…" aria-invalid={Boolean(errors.notes)} />
             {errors.notes && <span className="field-error">{errors.notes}</span>}
           </label>
           <label className="check">
@@ -175,7 +155,8 @@ export default function CartView() {
             <span>أوافق على <Link href="/legal/terms/">الشروط والأحكام</Link> و<Link href="/legal/returns/">سياسة الاسترجاع</Link> و<Link href="/legal/privacy/">سياسة الخصوصية</Link>.</span>
           </label>
           {errors.agree && <span className="field-error">{errors.agree}</span>}
-          <button type="submit" className="btn btn-primary btn-block">إرسال الطلب عبر واتساب <MessageCircle size={18} aria-hidden="true" /></button>
+          <button type="submit" className="btn btn-primary btn-block" disabled={sending}>{sending ? 'جارٍ تحويلك إلى صفحة الدفع…' : <>إتمام الطلب والدفع · {formatPrice(total)} <Lock size={18} aria-hidden="true" /></>}</button>
+          <a className="text-link wa-alt" href={whatsappLink(`مرحبًا، أرغب بطلب:\n${lines.map((l) => `- ${l.name} × ${l.quantity}`).join('\n')}\nالإجمالي: ${formatPrice(total)}`)} target="_blank" rel="noreferrer">أو أرسل الطلب عبر واتساب <MessageCircle size={16} aria-hidden="true" /></a>
         </form>
       </div>
     </div>

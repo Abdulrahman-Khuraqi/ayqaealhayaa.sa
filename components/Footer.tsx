@@ -25,12 +25,8 @@ export default function Footer() {
           {storeCategories.slice(0, 7).map((category) => <Link key={category.slug} href={`/store/${category.slug}/`}>{category.name}</Link>)}
         </div>
         <div>
-          <h3>الحلول الرقمية</h3>
-          <Link href="/programming/">البرمجة والتطوير</Link>
-          <Link href="/programming/#packages">باقات المواقع</Link>
-          <Link href="/hosting/">الاستضافة والخوادم</Link>
-          <Link href="/hosting/#domains">النطاقات</Link>
-          <Link href="/digital/">المنتجات الرقمية</Link>
+          <h3>الشركة</h3>
+          <Link href="/store/">المتجر</Link>
           <Link href="/about/">من نحن</Link>
           <Link href="/contact/">تواصل معنا</Link>
         </div>
