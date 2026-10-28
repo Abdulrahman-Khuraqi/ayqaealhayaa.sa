@@ -33,14 +33,13 @@ jobs:
           local-dir: ./pay-site-php/
           # مجلد موقع الدفع على الخادم (جذر pay.ayqaealhayaa.sa)؛ يمكن تغييره من Settings → Variables (FTP_PAY_DIR).
           server-dir: ${{ vars.FTP_PAY_DIR || 'pay/' }}
-          # الإعدادات وبيانات الطلبات موجودة على الخادم فقط: لا تُرفع ولا تُحذف.
+          # الإعدادات ومجلد data (الطلبات، ينشئه PHP على الخادم) لا تُرفع ولا تُلمس.
           exclude: |
             **/.git*
             **/.git*/**
             config.json
             info-client.txt
-            data/*.json
-            data/*.stamp
-            data/*.lock
+            data
+            data/**
             README.md
             *.example.*
