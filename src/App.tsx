@@ -90,8 +90,8 @@ function ProductCard({ product, onAdd, onOpen }: { product: Product; onAdd: (p: 
             <strong>{formatPrice(product.price)}</strong>
             {product.compareAt && product.compareAt > product.price && <del>{formatPrice(product.compareAt)}</del>}
           </div>
-          <button className="add-button" disabled={!product.available} onClick={() => onAdd(product)}>
-            <Plus size={18} /> {product.available ? 'أضف' : 'نفدت'}
+          <button className="add-button" disabled={!product.available} type="button" aria-label={`أضف ${product.name} للسلة`} onClick={() => onAdd(product)}>
+            <Plus size={18} /> {product.available ? 'أضف للسلة' : 'نفدت'}
           </button>
         </div>
       </div>
