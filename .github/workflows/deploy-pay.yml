@@ -1,0 +1,46 @@
+name: Deploy pay site (FTP)
+
+on:
+  push:
+    branches: [payone]
+  workflow_dispatch:
+
+# نفس مجموعة نشر الموقع الرئيسي حتى لا يعمل اتصالان FTP في الوقت نفسه.
+concurrency:
+  group: ftp-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: curl, mbstring, json
+
+      - name: Check PHP syntax
+        run: find pay-site-php -name '*.php' -print0 | xargs -0 -n1 php -l
+
+      - name: Upload pay-site-php/ to FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./pay-site-php/
+          # مجلد موقع الدفع على الخادم (جذر pay.ayqaealhayaa.sa)؛ يمكن تغييره من Settings → Variables (FTP_PAY_DIR).
+          server-dir: ${{ vars.FTP_PAY_DIR || 'pay/' }}
+          # الإعدادات وبيانات الطلبات موجودة على الخادم فقط: لا تُرفع ولا تُحذف.
+          exclude: |
+            **/.git*
+            **/.git*/**
+            config.json
+            info-client.txt
+            data/*.json
+            data/*.stamp
+            data/*.lock
+            README.md
+            *.example.*
