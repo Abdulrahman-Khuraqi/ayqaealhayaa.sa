@@ -42,8 +42,8 @@ if (in_array($asked, LANGS, true)) set_cookie('lang', $asked, 31536000);
 $r->lang = in_array($asked, LANGS, true) ? $asked : (in_array($_COOKIE['lang'] ?? '', LANGS, true) ? $_COOKIE['lang'] : 'ar');
 
 if ($r->method === 'POST') {
-  // PayOne posts the payment result and the website posts the signed cart from their own origins
-  // (both are verified by signature); every other form must come from this site.
+  // PayOne posts the payment result (verified by signature) and the website posts its cart from their own
+  // origins; every other form must come from this site.
   $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
   if ($path !== '/payment/return' && $path !== '/checkout' && $origin !== '' && $origin !== 'null') {
     $o = parse_url($origin);

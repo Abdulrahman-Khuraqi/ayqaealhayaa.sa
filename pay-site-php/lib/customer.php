@@ -1,6 +1,6 @@
 <?php
-// Customer pages of pay.ayqaealhayaa.sa. The cart is built on the website (ayqaealhayaa.sa), which posts a
-// signed order here: /checkout -> customer details -> PayOne payment page -> result / order tracking.
+// Customer pages of pay.ayqaealhayaa.sa. The cart is built on the website (ayqaealhayaa.sa), which posts it
+// here: /checkout -> customer details -> PayOne payment page -> result / order tracking.
 
 const CUSTOMER_INQUIRY_EVERY = 30000; // an open order page asks PayOne at most this often while a payment is pending
 const PAYABLE = ['unpaid', 'failed', 'expired', 'pending'];
@@ -71,7 +71,7 @@ function handoff_error(string $kind): string {
 function item_name(stdClass $item, string $L): string { return $item->name->$L ?? $item->name->ar; }
 
 // Step 2: who is paying. Only what the merchant needs; PayOne itself asks for no customer data.
-// The signed order travels with the form, so nothing is stored until the customer presses Pay.
+// The cart travels with the form, so nothing is stored until the customer presses Pay.
 function details_page(array $order, array $values = [], array $errors = []): string {
   $L = req()->lang;
   ob_start(); ?>
@@ -82,8 +82,7 @@ function details_page(array $order, array $values = [], array $errors = []): str
         <h1><?= esc(t($L, 'details_title')) ?></h1>
         <p class="lead"><?= esc(t($L, 'details_lead')) ?></p>
         <form method="post" action="/checkout/details" novalidate>
-          <input type="hidden" name="payload" value="<?= esc(f('payload')) ?>">
-          <input type="hidden" name="signature" value="<?= esc(f('signature')) ?>">
+          <input type="hidden" name="cart" value="<?= esc(f('cart')) ?>">
           <div class="hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
           <?= field($L, 'name', 'name', ['value' => $values['name'] ?? '', 'error' => $errors['name'] ?? '', 'attrs' => 'autocomplete="name" maxlength="80" required']) ?>
           <?= field($L, 'email', 'email', ['type' => 'email', 'value' => $values['email'] ?? '', 'error' => $errors['email'] ?? '', 'attrs' => 'autocomplete="email" maxlength="120" dir="ltr" required']) ?>
@@ -256,6 +255,7 @@ function customer_route(): void {
   $L = $r->lang;
 
   if ($method === 'GET' && $p === '/') send(direct_page());
+  if ($method === 'GET' && $p === '/checkout') redirect(store_url() . '/cart/');
 
   // Direct payment: the customer types the amount themselves (no website cart).
   if ($method === 'POST' && $p === '/') {
@@ -275,20 +275,20 @@ function customer_route(): void {
     redirect("/pay/{$created->token}/{$attempt->transactionId}");
   }
 
-  // Step 1 -> 2: the website posts the signed cart here.
+  // Step 1 -> 2: the website posts its cart here.
   if ($method === 'POST' && ($p === '/checkout' || $p === '/checkout/details')) {
-    $order = verify_handoff($r->form, cfg('handoffSecret'));
+    $order = read_cart($r->form);
     if (isset($order['error'])) send(handoff_error($order['error']), $order['error'] === 'expired' ? 410 : 400);
     // The same cart posted again (refresh, Back): continue the order already made from it.
     $existing = order_by_handoff($order['ref']);
     if ($existing) redirect("/order/{$existing->token}");
-    if ($p === '/checkout') send(details_page($order));
+    if ($p === '/checkout') send(details_page($order, $order['customer']));
 
     if (f('website') !== '') redirect(store_url()); // honeypot
     [$v, $errors] = customer_fields($L);
     if ($errors) send(details_page($order, $v, $errors), 422);
 
-    $created = create_order($v, $order['items'], $order['total'], $order['lang'], ['site' => store_url(), 'ref' => $order['ref']]);
+    $created = create_order(array_merge($order['customer'], $v), $order['items'], $order['total'], $order['lang'], ['site' => store_url(), 'ref' => $order['ref']]);
     $attempt = start_attempt($created);
     redirect("/pay/{$created->token}/{$attempt->transactionId}");
   }
