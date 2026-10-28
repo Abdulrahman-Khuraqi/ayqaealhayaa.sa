@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Code2, Globe, Info, Lock, MessageCircle, Minus, Plus, Server, ShoppingBag, Trash2, Wand2 } from 'lucide-react';
 import { useCart, type CartKind, type CartLine } from './CartProvider';
-import { SAUDI_MOBILE, formatPrice, vatPortion } from '@/lib/format';
+import { formatPrice, vatPortion } from '@/lib/format';
 import { site, whatsappLink } from '@/lib/site';
 
 const kindLabel: Record<CartKind, string> = { product: 'منتج', service: 'خدمة برمجية', hosting: 'استضافة', digital: 'منتج رقمي', domain: 'نطاق' };
@@ -66,12 +66,12 @@ export default function CartView() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const customer = Object.fromEntries(['name', 'phone', 'email', 'city', 'address', 'notes'].map((k) => [k, String(data.get(k) || '').trim()]));
-    customer.phone = customer.phone.replace(/\s/g, '');
+    customer.phone = customer.phone.replace(/[\s\-().]/g, '');
     const next: Record<string, string> = {};
     if (customer.name.length < 2) next.name = 'اكتب الاسم الكامل';
-    if (!SAUDI_MOBILE.test(customer.phone)) next.phone = 'رقم جوال سعودي صحيح يبدأ بـ 05';
+    // الجوال اختياري ويقبل أي رقم دولي (7–15 رقمًا، مع + اختيارية)
+    if (customer.phone && !/^\+?\d{7,15}$/.test(customer.phone)) next.phone = 'اكتب رقم جوال صحيحًا (يقبل أي دولة، مثل +9665xxxxxxxx أو +44…)';
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(customer.email)) next.email = 'اكتب بريدًا إلكترونيًا صحيحًا لإرسال تأكيد الطلب';
-    if (hasPhysical && customer.address.length < 6) next.address = 'أضف الحي واسم الشارع أو العنوان الوطني';
     if (!data.get('agree')) next.agree = 'يلزم الموافقة على الشروط والسياسات';
     setErrors(next);
     if (Object.keys(next).length) return;
@@ -122,26 +122,26 @@ export default function CartView() {
 
         <form className="form-card" onSubmit={onSubmit} noValidate>
           <h2>بيانات الطلب</h2>
-          <p className="hint">بعد تعبئة البيانات ننقلك إلى صفحة الدفع الآمنة (مدى، فيزا، ماستركارد) بالمبلغ جاهزًا.</p>
-          <label className="field">الاسم الكامل
+          <p className="hint">الاسم والبريد الإلكتروني فقط هما المطلوبان للدفع. بقية الحقول اختيارية.</p>
+          <label className="field">الاسم الكامل (مطلوب للدفع)
             <input name="name" autoComplete="name" aria-invalid={Boolean(errors.name)} />
             {errors.name && <span className="field-error">{errors.name}</span>}
           </label>
           <div className="field-row">
-            <label className="field">رقم الجوال
-              <input name="phone" type="tel" inputMode="tel" dir="ltr" autoComplete="tel" placeholder="05xxxxxxxx" aria-invalid={Boolean(errors.phone)} />
+            <label className="field">رقم الجوال (اختياري)
+              <input name="phone" type="tel" inputMode="tel" dir="ltr" autoComplete="tel" placeholder="+966 5x xxx xxxx أو أي رقم دولي" aria-invalid={Boolean(errors.phone)} />
               {errors.phone && <span className="field-error">{errors.phone}</span>}
             </label>
-            <label className="field">البريد الإلكتروني
+            <label className="field">البريد الإلكتروني (مطلوب للدفع)
               <input name="email" type="email" dir="ltr" autoComplete="email" aria-invalid={Boolean(errors.email)} />
               {errors.email && <span className="field-error">{errors.email}</span>}
             </label>
           </div>
-          <label className="field">المدينة
+          <label className="field">المدينة (اختياري)
             <select name="city" defaultValue={site.city}>{cities.map((c) => <option key={c}>{c}</option>)}</select>
           </label>
           {hasPhysical && (
-            <label className="field">عنوان التوصيل
+            <label className="field">عنوان التوصيل (اختياري)
               <input name="address" autoComplete="street-address" placeholder="الحي، الشارع، أو العنوان الوطني المختصر" aria-invalid={Boolean(errors.address)} />
               {errors.address && <span className="field-error">{errors.address}</span>}
             </label>
