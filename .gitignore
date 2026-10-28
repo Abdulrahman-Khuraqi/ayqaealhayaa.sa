@@ -1,0 +1,17 @@
+# only website/site is published from this repo
+/neoleap/
+/payone-test/
+/website/V2-new/
+/website/new-file-from-client/
+/website/ayqae-alhayaa-store-transfer-2026-10-26/
+/.claude/
+*.zip
+.env
+.env.*
+!.env.example
+node_modules/
+dist/
+*.log
+*.pid
+.DS_Store
+Thumbs.db

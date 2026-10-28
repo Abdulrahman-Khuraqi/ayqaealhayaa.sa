@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1788370007017,
+      "tag": "0000_tiresome_storm",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1788377436207,
+      "tag": "0001_needy_skullbuster",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1788805384095,
+      "tag": "0002_cool_the_renegades",
+      "breakpoints": true
+    }
+  ]
+}

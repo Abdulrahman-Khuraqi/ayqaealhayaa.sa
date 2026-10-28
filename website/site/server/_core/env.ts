@@ -1,0 +1,16 @@
+export const ENV = {
+  appId: process.env.VITE_APP_ID ?? "",
+  cookieSecret: process.env.JWT_SECRET ?? "",
+  databaseUrl: process.env.DATABASE_URL ?? "",
+  oAuthServerUrl: process.env.OAUTH_SERVER_URL ?? "",
+  ownerOpenId: process.env.OWNER_OPEN_ID ?? "",
+  isProduction: process.env.NODE_ENV === "production",
+  forgeApiUrl: process.env.BUILT_IN_FORGE_API_URL ?? "",
+  forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
+  billingAdminEmail: process.env.BILLING_ADMIN_EMAIL?.trim().toLowerCase() ?? "",
+  billingAdminPassword: process.env.BILLING_ADMIN_PASSWORD ?? "",
+  ccavenueMerchantId: process.env.CCAVENUE_MERCHANT_ID?.trim() ?? "",
+  ccavenueAccessCode: process.env.CCAVENUE_ACCESS_CODE?.trim() ?? "",
+  ccavenueEncryptionKey: process.env.CCAVENUE_ENCRYPTION_KEY?.trim() ?? "",
+  ccavenueLivePaymentsEnabled: process.env.CCAVENUE_LIVE_PAYMENTS_ENABLED === "true",
+};
