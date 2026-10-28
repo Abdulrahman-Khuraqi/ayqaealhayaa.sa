@@ -1,0 +1,183 @@
+'use client';
+
+import Link from 'next/link';
+import { useState } from 'react';
+import { CheckCircle2, Code2, Globe, Info, MessageCircle, Minus, Plus, Server, ShoppingBag, Trash2, Wand2 } from 'lucide-react';
+import { useCart, type CartKind, type CartLine } from './CartProvider';
+import { SAUDI_MOBILE, formatPrice, vatPortion } from '@/lib/format';
+import { site, whatsappLink } from '@/lib/site';
+
+const kindLabel: Record<CartKind, string> = { product: 'منتج', service: 'خدمة برمجية', hosting: 'استضافة', digital: 'منتج رقمي', domain: 'نطاق' };
+const kindIcon: Record<Exclude<CartKind, 'product'>, React.ReactNode> = {
+  service: <Code2 size={28} />, hosting: <Server size={28} />, digital: <Wand2 size={28} />, domain: <Globe size={28} />,
+};
+const cities = ['الرياض', 'جدة', 'مكة المكرمة', 'المدينة المنورة', 'الدمام', 'الخبر', 'الظهران', 'الأحساء', 'القصيم', 'أبها', 'خميس مشيط', 'تبوك', 'حائل', 'جازان', 'نجران', 'الطائف', 'الجبيل', 'ينبع', 'أخرى'];
+
+function orderRef() {
+  const d = new Date();
+  const stamp = `${String(d.getFullYear()).slice(2)}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+  return `AYQ-${stamp}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+}
+
+function buildMessage(ref: string, lines: CartLine[], total: number, customer: Record<string, string>) {
+  const items = lines.map((line, i) => `${i + 1}. ${line.name}${line.note ? ` (${line.note})` : ''}\n   الكمية: ${line.quantity} × ${formatPrice(line.price)} = ${formatPrice(line.price * line.quantity)}`).join('\n');
+  return [
+    `طلب جديد من الموقع — ${ref}`,
+    '',
+    items,
+    '',
+    `الإجمالي: ${formatPrice(total)} (شامل ضريبة القيمة المضافة ${formatPrice(vatPortion(total))})`,
+    '',
+    `الاسم: ${customer.name}`,
+    `الجوال: ${customer.phone}`,
+    customer.email ? `البريد: ${customer.email}` : null,
+    `المدينة: ${customer.city}`,
+    customer.address ? `العنوان: ${customer.address}` : null,
+    customer.notes ? `ملاحظات: ${customer.notes}` : null,
+    '',
+    'أرجو تأكيد الطلب وإرسال رابط الدفع.',
+  ].filter((row) => row !== null).join('\n');
+}
+
+export default function CartView() {
+  const { lines, total, ready, setQuantity, remove, clear } = useCart();
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [sent, setSent] = useState<{ ref: string; message: string } | null>(null);
+  const hasPhysical = lines.some((line) => line.kind === 'product');
+  const hasDomain = lines.some((line) => line.kind === 'domain');
+  const hasQuoted = lines.some((line) => line.note?.startsWith('سعر ابتدائي'));
+
+  if (!ready) return <div className="empty-state" aria-busy="true"><ShoppingBag size={40} aria-hidden="true" /><p>جارٍ تحميل السلة…</p></div>;
+
+  if (sent) {
+    return (
+      <div className="success-box">
+        <CheckCircle2 size={52} aria-hidden="true" />
+        <h2>تم تجهيز طلبك</h2>
+        <p>رقم الطلب <code>{sent.ref}</code>. أرسل الرسالة في واتساب وسنؤكد الطلب ونرسل لك رابط الدفع الآمن خلال أوقات العمل.</p>
+        <div className="hero-ctas">
+          <a className="btn btn-primary" href={whatsappLink(sent.message)} target="_blank" rel="noreferrer">فتح واتساب مرة أخرى <MessageCircle size={18} aria-hidden="true" /></a>
+          <Link className="btn btn-outline-dark" href="/store/">مواصلة التسوق</Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (lines.length === 0) {
+    return (
+      <div className="empty-state">
+        <ShoppingBag size={44} aria-hidden="true" />
+        <h3>السلة فارغة</h3>
+        <p>ابدأ من المتجر أو اختر خدمة رقمية؛ يمكنك جمع الأجهزة والخدمات في طلب واحد.</p>
+        <div className="hero-ctas">
+          <Link className="btn btn-primary" href="/store/">تصفح المتجر</Link>
+          <Link className="btn btn-outline-dark" href="/programming/">الخدمات البرمجية</Link>
+        </div>
+      </div>
+    );
+  }
+
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const customer = Object.fromEntries(['name', 'phone', 'email', 'city', 'address', 'notes'].map((k) => [k, String(data.get(k) || '').trim()]));
+    customer.phone = customer.phone.replace(/\s/g, '');
+    const next: Record<string, string> = {};
+    if (customer.name.length < 2) next.name = 'اكتب الاسم الكامل';
+    if (!SAUDI_MOBILE.test(customer.phone)) next.phone = 'رقم جوال سعودي صحيح يبدأ بـ 05';
+    if (customer.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customer.email)) next.email = 'بريد إلكتروني غير صحيح';
+    if (hasPhysical && customer.address.length < 6) next.address = 'أضف الحي واسم الشارع أو العنوان الوطني';
+    if (hasDomain && customer.notes.length < 3) next.notes = 'اكتب اسم النطاق المطلوب';
+    if (!data.get('agree')) next.agree = 'يلزم الموافقة على الشروط والسياسات';
+    setErrors(next);
+    if (Object.keys(next).length) return;
+
+    const ref = orderRef();
+    const message = buildMessage(ref, lines, total, customer);
+    window.open(whatsappLink(message), '_blank', 'noopener,noreferrer');
+    setSent({ ref, message });
+    clear();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  return (
+    <div className="cart-layout">
+      <div>
+        <div className="cart-lines">
+          {lines.map((line) => (
+            <article key={line.key} className="cart-line">
+              <div className="cart-thumb">{line.image ? <img src={line.image} alt="" /> : line.kind === 'product' ? <ShoppingBag size={28} /> : kindIcon[line.kind]}</div>
+              <div>
+                <h3>{line.href ? <Link href={line.href}>{line.name}</Link> : line.name}</h3>
+                <div className="meta"><span className="kind">{kindLabel[line.kind]}</span>{line.note && <span>{line.note}</span>}<span>{formatPrice(line.price)} للوحدة</span></div>
+              </div>
+              <div className="cart-line-end">
+                <div className="qty" aria-label={`كمية ${line.name}`}>
+                  <button type="button" onClick={() => setQuantity(line.key, line.quantity + 1)} aria-label="زيادة"><Plus size={15} /></button>
+                  <output>{line.quantity}</output>
+                  <button type="button" onClick={() => setQuantity(line.key, line.quantity - 1)} aria-label="إنقاص"><Minus size={15} /></button>
+                </div>
+                <strong>{formatPrice(line.price * line.quantity)}</strong>
+                <button type="button" className="remove-btn" onClick={() => remove(line.key)}><Trash2 size={14} aria-hidden="true" /> حذف</button>
+              </div>
+            </article>
+          ))}
+        </div>
+        {hasQuoted && (
+          <div className="notice mt-lg">
+            <Info size={18} aria-hidden="true" />
+            <p>بعض الخدمات في سلتك بسعر ابتدائي. سنرسل لك عرض سعر نهائيًا مكتوبًا قبل طلب أي دفعة.</p>
+          </div>
+        )}
+      </div>
+
+      <div className="summary">
+        <div className="summary-box">
+          <h2>ملخص الطلب</h2>
+          <div className="summary-row"><span>المجموع قبل الضريبة</span><span>{formatPrice(Math.round((total - vatPortion(total)) * 100) / 100)}</span></div>
+          <div className="summary-row"><span>ضريبة القيمة المضافة 15%</span><span>{formatPrice(vatPortion(total))}</span></div>
+          <div className="summary-row"><span>الشحن</span>{hasPhysical ? <span className="free">مجاني</span> : <span>لا يوجد</span>}</div>
+          <div className="summary-row total"><span>الإجمالي</span><strong>{formatPrice(total)}</strong></div>
+        </div>
+
+        <form className="form-card" onSubmit={onSubmit} noValidate>
+          <h2>بيانات الطلب</h2>
+          <p className="hint">نرسل الطلب عبر واتساب، ثم نؤكده ونرسل رابط دفع آمن (مدى، فيزا، Apple Pay) أو بيانات التحويل البنكي.</p>
+          <label className="field">الاسم الكامل
+            <input name="name" autoComplete="name" aria-invalid={Boolean(errors.name)} />
+            {errors.name && <span className="field-error">{errors.name}</span>}
+          </label>
+          <div className="field-row">
+            <label className="field">رقم الجوال
+              <input name="phone" type="tel" inputMode="tel" dir="ltr" autoComplete="tel" placeholder="05xxxxxxxx" aria-invalid={Boolean(errors.phone)} />
+              {errors.phone && <span className="field-error">{errors.phone}</span>}
+            </label>
+            <label className="field">البريد (اختياري)
+              <input name="email" type="email" dir="ltr" autoComplete="email" aria-invalid={Boolean(errors.email)} />
+              {errors.email && <span className="field-error">{errors.email}</span>}
+            </label>
+          </div>
+          <label className="field">المدينة
+            <select name="city" defaultValue={site.city}>{cities.map((c) => <option key={c}>{c}</option>)}</select>
+          </label>
+          {hasPhysical && (
+            <label className="field">عنوان التوصيل
+              <input name="address" autoComplete="street-address" placeholder="الحي، الشارع، أو العنوان الوطني المختصر" aria-invalid={Boolean(errors.address)} />
+              {errors.address && <span className="field-error">{errors.address}</span>}
+            </label>
+          )}
+          <label className="field">{hasDomain ? 'اسم النطاق وملاحظات' : 'ملاحظات (اختياري)'}
+            <textarea name="notes" placeholder={hasDomain ? 'مثال: mystore.sa' : 'وقت مناسب للتواصل، تفاصيل المشروع…'} aria-invalid={Boolean(errors.notes)} />
+            {errors.notes && <span className="field-error">{errors.notes}</span>}
+          </label>
+          <label className="check">
+            <input type="checkbox" name="agree" />
+            <span>أوافق على <Link href="/legal/terms/">الشروط والأحكام</Link> و<Link href="/legal/returns/">سياسة الاسترجاع</Link> و<Link href="/legal/privacy/">سياسة الخصوصية</Link>.</span>
+          </label>
+          {errors.agree && <span className="field-error">{errors.agree}</span>}
+          <button type="submit" className="btn btn-primary btn-block">إرسال الطلب عبر واتساب <MessageCircle size={18} aria-hidden="true" /></button>
+        </form>
+      </div>
+    </div>
+  );
+}
