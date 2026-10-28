@@ -735,3 +735,5 @@ a.contact-card:hover { border-color: var(--bronze-500); }
 .hero { min-height: 100svh; }
 @media (max-width: 640px) { .hero { min-height: 0; } }
 .showcase, .faq-main { grid-template-columns: minmax(0, 1fr); }
+.footer-mail { display: inline-flex; align-items: center; gap: .5rem; padding: .55rem 1rem; border-radius: 99px; border: 1px solid rgba(200, 138, 90, .4); color: var(--bronze-300); font-weight: 700; font-size: .9rem; }
+.footer-mail:hover { background: rgba(200, 138, 90, .12); }

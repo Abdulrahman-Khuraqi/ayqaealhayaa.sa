@@ -5,7 +5,6 @@ import { legalDocs } from '@/data/legal';
 import { storeCategories } from '@/lib/catalog';
 import { site, whatsappLink } from '@/lib/site';
 
-const paymentMethods = ['مدى', 'Visa', 'Mastercard', 'Apple Pay', 'STC Pay', 'تحويل بنكي'];
 
 export default function Footer() {
   return (
@@ -47,9 +46,7 @@ export default function Footer() {
           <div><dt>السجل التجاري</dt><dd dir="ltr">{site.commercialRegistration}</dd></div>
           <div><dt>الرقم الضريبي</dt><dd dir="ltr">{site.vatNumber}</dd></div>
         </dl>
-        <ul className="payment-list" aria-label="وسائل الدفع المتاحة">
-          {paymentMethods.map((method) => <li key={method}>{method}</li>)}
-        </ul>
+        <a className="footer-mail" href={`mailto:${site.email}`}><Mail size={16} aria-hidden="true" /> {site.email}</a>
       </div>
 
       <div className="footer-bottom">
