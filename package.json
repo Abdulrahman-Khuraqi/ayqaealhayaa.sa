@@ -1,0 +1,35 @@
+{
+  "name": "iqaatech-store",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "packageManager": "pnpm@11.0.0",
+  "scripts": {
+    "dev": "tsx server/index.ts",
+    "build": "vite build",
+    "start": "NODE_ENV=production tsx server/index.ts",
+    "check": "tsc --noEmit",
+    "import:catalog": "tsx scripts/import-catalog.ts"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "cors": "latest",
+    "dotenv": "latest",
+    "express": "latest",
+    "lucide-react": "latest",
+    "mysql2": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "stripe": "latest",
+    "tsx": "latest",
+    "vite": "latest"
+  },
+  "devDependencies": {
+    "@types/cors": "latest",
+    "@types/express": "latest",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "typescript": "latest"
+  }
+}
