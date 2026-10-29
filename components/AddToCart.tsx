@@ -29,7 +29,7 @@ export default function AddToCart({ item, label = 'أضف إلى السلة', di
     return (
       <button type="button" className={`card-add ${added ? 'is-added' : ''} ${className}`} onClick={onAdd} disabled={disabled} aria-label={disabled ? disabledLabel : `${label}: ${item.name}`}>
         <span>{disabled ? disabledLabel : added ? 'تمت الإضافة' : label}</span>
-        <i aria-hidden="true">{added ? <Check size={16} /> : <ShoppingBag size={16} />}</i>
+        <i aria-hidden="true">{added ? <Check size={18} strokeWidth={2.2} /> : <ShoppingBag size={18} strokeWidth={1.9} />}</i>
       </button>
     );
   }

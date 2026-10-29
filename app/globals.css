@@ -639,14 +639,15 @@ a.contact-card:hover { border-color: var(--bronze-500); }
 .price del { color: var(--muted-dark); font-size: .8rem; }
 .product-save { font-size: .75rem; font-weight: 700; color: var(--danger); }
 .product-save.muted { color: var(--muted-dark); font-weight: 500; }
-.card-add { margin-top: .55rem; display: flex; align-items: center; justify-content: space-between; gap: .5rem; min-height: 44px; padding: 0 .4rem 0 1rem; border-radius: 12px; border: 1px solid var(--ink-900); background: var(--ink-900); color: var(--text-light); font-weight: 700; font-size: .86rem; transition: background .25s var(--ease), border-color .25s var(--ease), color .25s var(--ease); }
-.card-add i { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 9px; background: var(--bronze-500); color: var(--ink-900); transition: transform .3s var(--ease); }
+.card-add { margin-top: .55rem; width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 44px; padding: 0 1rem; border-radius: 12px; border: 1px solid var(--ink-900); background: var(--ink-900); color: var(--text-light); font-weight: 700; font-size: .92rem; line-height: 1; white-space: nowrap; cursor: pointer; transition: background .25s var(--ease), border-color .25s var(--ease), color .25s var(--ease); }
+.card-add i { flex: none; display: grid; place-items: center; color: var(--bronze-300); font-style: normal; transition: transform .3s var(--ease), color .25s var(--ease); }
 .card-add:hover:not(:disabled) { background: var(--bronze-500); border-color: var(--bronze-500); color: var(--ink-900); }
-.card-add:hover:not(:disabled) i { background: var(--ink-900); color: var(--bronze-300); transform: rotate(-8deg) scale(1.05); }
+.card-add:hover:not(:disabled) i { color: var(--ink-900); transform: translateY(-1px) rotate(-8deg); }
+.card-add:focus-visible { outline: 2px solid var(--bronze-500); outline-offset: 2px; }
 .card-add.is-added, .card-add.is-added:hover { background: var(--success); border-color: var(--success); color: #fff; }
-.card-add.is-added i { background: #fff; color: var(--success); }
+.card-add.is-added i { color: #fff; transform: none; }
 .card-add:disabled { background: transparent; border-color: var(--line-light); color: var(--muted-dark); cursor: not-allowed; }
-.card-add:disabled i { background: var(--sand-200); color: var(--sand-400); }
+.card-add:disabled i { color: var(--sand-400); }
 
 /* ---------- Category tiles (refined) ---------- */
 .category-grid { perspective: 1400px; }
@@ -717,8 +718,7 @@ a.contact-card:hover { border-color: var(--bronze-500); }
   .price strong { font-size: 1.05rem; }
   .product-stock { display: none; }
   .product-peek { display: none; }
-  .card-add { min-height: 40px; padding-inline-start: .7rem; font-size: .8rem; }
-  .card-add i { width: 30px; height: 30px; }
+  .card-add { min-height: 42px; gap: .4rem; padding: 0 .6rem; font-size: .86rem; }
   .faq-q { gap: .7rem; padding: 1rem; font-size: .95rem; }
   .faq-a p { padding: 0 1rem 1rem; }
   .big-row { gap: 1.2rem; }
