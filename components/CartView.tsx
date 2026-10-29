@@ -123,7 +123,7 @@ export default function CartView() {
         <form className="form-card" onSubmit={onSubmit} noValidate>
           <h2>بيانات الطلب</h2>
           <p className="hint">الحقول المعلّمة بـ <span className="req" aria-hidden="true">*</span> مطلوبة.</p>
-          <label className="field">الاسم الكامل <span className="req" aria-hidden="true">*</span>
+          <label className="field"><span className="field-label">الاسم الكامل<span className="req" aria-hidden="true">*</span></span>
             <input name="name" autoComplete="name" aria-invalid={Boolean(errors.name)} />
             {errors.name && <span className="field-error">{errors.name}</span>}
           </label>
@@ -132,7 +132,7 @@ export default function CartView() {
               <input name="phone" type="tel" inputMode="tel" dir="ltr" autoComplete="tel" aria-invalid={Boolean(errors.phone)} />
               {errors.phone && <span className="field-error">{errors.phone}</span>}
             </label>
-            <label className="field">البريد الإلكتروني <span className="req" aria-hidden="true">*</span>
+            <label className="field"><span className="field-label">البريد الإلكتروني<span className="req" aria-hidden="true">*</span></span>
               <input name="email" type="email" dir="ltr" autoComplete="email" aria-invalid={Boolean(errors.email)} />
               {errors.email && <span className="field-error">{errors.email}</span>}
             </label>
@@ -152,7 +152,7 @@ export default function CartView() {
           </label>
           <label className="check">
             <input type="checkbox" name="agree" />
-            <span>أوافق على <Link href="/legal/terms/">الشروط والأحكام</Link> و<Link href="/legal/returns/">سياسة الاسترجاع</Link> و<Link href="/legal/privacy/">سياسة الخصوصية</Link>. <span className="req" aria-hidden="true">*</span></span>
+            <span>أوافق على <Link href="/legal/terms/">الشروط والأحكام</Link> و<Link href="/legal/returns/">سياسة الاسترجاع</Link> و<Link href="/legal/privacy/">سياسة الخصوصية</Link>.<span className="req" aria-hidden="true">*</span></span>
           </label>
           {errors.agree && <span className="field-error">{errors.agree}</span>}
           <button type="submit" className="btn btn-primary btn-block" disabled={sending}>{sending ? 'جارٍ تحويلك إلى صفحة الدفع…' : <>إتمام الطلب والدفع · {formatPrice(total)} <Lock size={18} aria-hidden="true" /></>}</button>

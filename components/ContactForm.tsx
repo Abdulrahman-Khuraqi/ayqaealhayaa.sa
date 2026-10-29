@@ -33,11 +33,11 @@ export default function ContactForm() {
       <h2>أرسل طلبك</h2>
       <p className="hint">سننقلك إلى واتساب برسالة جاهزة؛ نرد خلال أوقات العمل.</p>
       <div className="field-row">
-        <label className="field">الاسم <span className="req" aria-hidden="true">*</span>
+        <label className="field"><span className="field-label">الاسم<span className="req" aria-hidden="true">*</span></span>
           <input name="name" autoComplete="name" aria-invalid={Boolean(errors.name)} placeholder="اسمك الكريم" />
           {errors.name && <span className="field-error">{errors.name}</span>}
         </label>
-        <label className="field">رقم الجوال <span className="req" aria-hidden="true">*</span>
+        <label className="field"><span className="field-label">رقم الجوال<span className="req" aria-hidden="true">*</span></span>
           <input name="phone" type="tel" inputMode="tel" autoComplete="tel" dir="ltr" aria-invalid={Boolean(errors.phone)} />
           {errors.phone && <span className="field-error">{errors.phone}</span>}
         </label>
@@ -45,7 +45,7 @@ export default function ContactForm() {
       <label className="field">الموضوع
         <select name="topic" defaultValue={topics[0]}>{topics.map((t) => <option key={t}>{t}</option>)}</select>
       </label>
-      <label className="field">التفاصيل <span className="req" aria-hidden="true">*</span>
+      <label className="field"><span className="field-label">التفاصيل<span className="req" aria-hidden="true">*</span></span>
         <textarea name="message" aria-invalid={Boolean(errors.message)} placeholder="ما الذي تحتاجه؟ اذكر المدينة إن كان الطلب تركيبًا." />
         {errors.message && <span className="field-error">{errors.message}</span>}
       </label>
