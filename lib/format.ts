@@ -20,5 +20,5 @@ export function normalizeArabic(input: string) {
     .trim();
 }
 
-/** جوال سعودي: 05xxxxxxxx أو 9665xxxxxxxx مع أو بدون +. */
-export const SAUDI_MOBILE = /^(05\d{8}|\+?9665\d{8})$/;
+/** رقم جوال: أي رقم محلي أو دولي (7 إلى 15 رقمًا) مع أو بدون +. */
+export const PHONE = /^\+?\d{7,15}$/;

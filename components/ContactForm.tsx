@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Send, ShieldCheck } from 'lucide-react';
-import { SAUDI_MOBILE } from '@/lib/format';
+import { PHONE } from '@/lib/format';
 import { whatsappLink } from '@/lib/site';
 
 const topics = ['استفسار عن منتج', 'خدمة تركيب', 'مشروع برمجي', 'استضافة أو نطاق', 'منتج رقمي', 'مبيعات الجملة للشركات', 'ضمان أو استرجاع', 'أخرى'];
@@ -15,12 +15,12 @@ export default function ContactForm() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const name = String(data.get('name') || '').trim();
-    const phone = String(data.get('phone') || '').replace(/\s/g, '');
+    const phone = String(data.get('phone') || '').replace(/[\s\-()]/g, '');
     const topic = String(data.get('topic') || '');
     const message = String(data.get('message') || '').trim();
     const next: Record<string, string> = {};
     if (name.length < 2) next.name = 'اكتب اسمك من فضلك';
-    if (!SAUDI_MOBILE.test(phone)) next.phone = 'رقم جوال سعودي صحيح يبدأ بـ 05';
+    if (!PHONE.test(phone)) next.phone = 'اكتب رقم جوال صحيحًا';
     if (message.length < 5) next.message = 'اكتب تفاصيل طلبك باختصار';
     setErrors(next);
     if (Object.keys(next).length) return;
@@ -33,19 +33,19 @@ export default function ContactForm() {
       <h2>أرسل طلبك</h2>
       <p className="hint">سننقلك إلى واتساب برسالة جاهزة؛ نرد خلال أوقات العمل.</p>
       <div className="field-row">
-        <label className="field">الاسم
+        <label className="field">الاسم <span className="req" aria-hidden="true">*</span>
           <input name="name" autoComplete="name" aria-invalid={Boolean(errors.name)} placeholder="اسمك الكريم" />
           {errors.name && <span className="field-error">{errors.name}</span>}
         </label>
-        <label className="field">رقم الجوال
-          <input name="phone" type="tel" inputMode="tel" autoComplete="tel" dir="ltr" aria-invalid={Boolean(errors.phone)} placeholder="05xxxxxxxx" />
+        <label className="field">رقم الجوال <span className="req" aria-hidden="true">*</span>
+          <input name="phone" type="tel" inputMode="tel" autoComplete="tel" dir="ltr" aria-invalid={Boolean(errors.phone)} />
           {errors.phone && <span className="field-error">{errors.phone}</span>}
         </label>
       </div>
       <label className="field">الموضوع
         <select name="topic" defaultValue={topics[0]}>{topics.map((t) => <option key={t}>{t}</option>)}</select>
       </label>
-      <label className="field">التفاصيل
+      <label className="field">التفاصيل <span className="req" aria-hidden="true">*</span>
         <textarea name="message" aria-invalid={Boolean(errors.message)} placeholder="ما الذي تحتاجه؟ اذكر المدينة إن كان الطلب تركيبًا." />
         {errors.message && <span className="field-error">{errors.message}</span>}
       </label>

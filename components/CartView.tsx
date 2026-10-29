@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Code2, Globe, Info, Lock, MessageCircle, Minus, Plus, Server, ShoppingBag, Trash2, Wand2 } from 'lucide-react';
 import { useCart, type CartKind, type CartLine } from './CartProvider';
-import { SAUDI_MOBILE, formatPrice, vatPortion } from '@/lib/format';
+import { PHONE, formatPrice, vatPortion } from '@/lib/format';
 import { site, whatsappLink } from '@/lib/site';
 
 const kindLabel: Record<CartKind, string> = { product: 'منتج', service: 'خدمة برمجية', hosting: 'استضافة', digital: 'منتج رقمي', domain: 'نطاق' };
@@ -66,10 +66,10 @@ export default function CartView() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const customer = Object.fromEntries(['name', 'phone', 'email', 'city', 'address', 'notes'].map((k) => [k, String(data.get(k) || '').trim()]));
-    customer.phone = customer.phone.replace(/\s/g, '');
+    customer.phone = customer.phone.replace(/[\s\-()]/g, '');
     const next: Record<string, string> = {};
     if (customer.name.length < 2) next.name = 'اكتب الاسم الكامل';
-    if (!SAUDI_MOBILE.test(customer.phone)) next.phone = 'رقم جوال سعودي صحيح يبدأ بـ 05';
+    if (!PHONE.test(customer.phone)) next.phone = 'اكتب رقم جوال صحيحًا';
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(customer.email)) next.email = 'اكتب بريدًا إلكترونيًا صحيحًا لإرسال تأكيد الطلب';
     if (hasPhysical && customer.address.length < 6) next.address = 'أضف الحي واسم الشارع أو العنوان الوطني';
     if (!data.get('agree')) next.agree = 'يلزم الموافقة على الشروط والسياسات';
@@ -123,16 +123,16 @@ export default function CartView() {
         <form className="form-card" onSubmit={onSubmit} noValidate>
           <h2>بيانات الطلب</h2>
           <p className="hint">بعد تعبئة البيانات ننقلك إلى صفحة الدفع الآمنة (مدى، فيزا، ماستركارد) بالمبلغ جاهزًا.</p>
-          <label className="field">الاسم الكامل
+          <label className="field">الاسم الكامل <span className="req" aria-hidden="true">*</span>
             <input name="name" autoComplete="name" aria-invalid={Boolean(errors.name)} />
             {errors.name && <span className="field-error">{errors.name}</span>}
           </label>
           <div className="field-row">
-            <label className="field">رقم الجوال
-              <input name="phone" type="tel" inputMode="tel" dir="ltr" autoComplete="tel" placeholder="05xxxxxxxx" aria-invalid={Boolean(errors.phone)} />
+            <label className="field">رقم الجوال <span className="req" aria-hidden="true">*</span>
+              <input name="phone" type="tel" inputMode="tel" dir="ltr" autoComplete="tel" aria-invalid={Boolean(errors.phone)} />
               {errors.phone && <span className="field-error">{errors.phone}</span>}
             </label>
-            <label className="field">البريد الإلكتروني
+            <label className="field">البريد الإلكتروني <span className="req" aria-hidden="true">*</span>
               <input name="email" type="email" dir="ltr" autoComplete="email" aria-invalid={Boolean(errors.email)} />
               {errors.email && <span className="field-error">{errors.email}</span>}
             </label>
@@ -141,18 +141,18 @@ export default function CartView() {
             <select name="city" defaultValue={site.city}>{cities.map((c) => <option key={c}>{c}</option>)}</select>
           </label>
           {hasPhysical && (
-            <label className="field">عنوان التوصيل
+            <label className="field">عنوان التوصيل <span className="req" aria-hidden="true">*</span>
               <input name="address" autoComplete="street-address" placeholder="الحي، الشارع، أو العنوان الوطني المختصر" aria-invalid={Boolean(errors.address)} />
               {errors.address && <span className="field-error">{errors.address}</span>}
             </label>
           )}
-          <label className="field">ملاحظات (اختياري)
+          <label className="field">ملاحظات
             <textarea name="notes" maxLength={500} placeholder="وقت مناسب للتوصيل أو التواصل…" aria-invalid={Boolean(errors.notes)} />
             {errors.notes && <span className="field-error">{errors.notes}</span>}
           </label>
           <label className="check">
             <input type="checkbox" name="agree" />
-            <span>أوافق على <Link href="/legal/terms/">الشروط والأحكام</Link> و<Link href="/legal/returns/">سياسة الاسترجاع</Link> و<Link href="/legal/privacy/">سياسة الخصوصية</Link>.</span>
+            <span>أوافق على <Link href="/legal/terms/">الشروط والأحكام</Link> و<Link href="/legal/returns/">سياسة الاسترجاع</Link> و<Link href="/legal/privacy/">سياسة الخصوصية</Link>. <span className="req" aria-hidden="true">*</span></span>
           </label>
           {errors.agree && <span className="field-error">{errors.agree}</span>}
           <button type="submit" className="btn btn-primary btn-block" disabled={sending}>{sending ? 'جارٍ تحويلك إلى صفحة الدفع…' : <>إتمام الطلب والدفع · {formatPrice(total)} <Lock size={18} aria-hidden="true" /></>}</button>
