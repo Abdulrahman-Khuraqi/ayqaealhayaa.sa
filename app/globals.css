@@ -596,8 +596,8 @@ a.contact-card:hover { border-color: var(--bronze-500); }
 .big-type { overflow: hidden; background: var(--sand-50); padding-block: clamp(32px, 5vw, 64px); display: grid; gap: .5rem; }
 .big-row { display: flex; align-items: center; gap: 2.2rem; width: max-content; font-family: var(--font-display); font-weight: 700; font-size: clamp(3rem, 9vw, 8.5rem); line-height: 1.15; color: var(--ink-900); white-space: nowrap; will-change: transform; }
 .big-row i { width: .35em; height: .35em; border-radius: 50%; background: var(--bronze-500); flex-shrink: 0; }
-.big-row.outline { color: transparent; -webkit-text-stroke: 1.5px var(--bronze-600); }
-.big-row.outline i { background: transparent; border: 2px solid var(--bronze-500); }
+.big-row.outline { color: var(--bronze-300); }
+.big-row.outline i { background: var(--bronze-300); }
 
 /* ---------- Product showcase & cards ---------- */
 .showcase { display: grid; gap: 1.5rem; }
