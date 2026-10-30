@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   ArrowLeft,
+  Award,
   BadgeCheck,
   Camera,
   ChevronLeft,
@@ -15,7 +16,6 @@ import {
   ShieldCheck,
   ShoppingBag,
   SlidersHorizontal,
-  Sparkles,
   Wifi,
   X,
   Zap,
@@ -248,7 +248,7 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <div className="announcement"><Sparkles size={15} /> تقنية موثوقة، دفع آمن، وتجربة شراء أوضح من البداية للنهاية.</div>
+      <div className="announcement"><Award size={15} /> شركة إيقاع الحياة موزع معتمد من مزودي خدمات الاتصالات — تقنية موثوقة ودفع آمن.</div>
       <header className="site-header">
         <a href="/" className="brand-link"><BrandMark /></a>
         <nav className={menuOpen ? 'nav-links open' : 'nav-links'}><a href="#products" onClick={() => setMenuOpen(false)}>المنتجات</a><a href="#solutions" onClick={() => setMenuOpen(false)}>حلولنا</a><a href="#trust" onClick={() => setMenuOpen(false)}>لماذا نحن</a><a href="/orders">طلباتي</a><div className="mobile-category-list"><span>الفئات الرئيسية</span><div>{mainStoreCategories.map((category) => <button type="button" key={category.name} className={activeCategory === category.name ? 'active' : ''} onClick={() => selectCategory(category.name)}>{category.name}</button>)}</div></div></nav>
@@ -263,15 +263,17 @@ export default function App() {
 
         <section className="category-rail" aria-label="الفئات الرئيسية للمنتجات"><div className="section-mini"><span>الفئات الرئيسية</span><SlidersHorizontal size={18} /></div><div className="category-chips"><button className={activeCategory === 'الكل' ? 'active' : ''} onClick={() => selectCategory('الكل')}>كل المنتجات</button>{mainStoreCategories.map((category) => <button key={category.name} className={activeCategory === category.name ? 'active' : ''} onClick={() => selectCategory(category.name)}>{category.name}</button>)}</div></section>
 
+        <section className="distributor-band" aria-label="اعتماد الشركة"><div className="distributor-icon"><Award size={30} /></div><div className="distributor-copy"><span className="eyebrow">اعتماد رسمي</span><h2>شركة إيقاع الحياة موزع معتمد من مزودي خدمات الاتصالات</h2><p>نوفر شرائح وباقات الاتصال والبيانات عبر قنوات توزيع معتمدة، لتحصل على منتج أصلي وخدمة موثوقة.</p></div><span className="distributor-seal"><BadgeCheck size={18} /> موزع معتمد</span></section>
+
         <section className="offer-banner-section" aria-label="بنرات العروض"><div className="offer-banner-head"><div><span className="eyebrow">عروض موسمية</span><h2>عروض مختارة</h2></div><span>تسوّق العرض المناسب لك</span></div><div className="offer-banner-track">{OFFER_BANNERS.map((banner, index) => <article className="offer-banner" key={banner}><img src={banner} alt={`بنر عروض ${index + 1}`} loading={index === 0 ? 'eager' : 'lazy'} /></article>)}</div></section>
 
         <section id="products" className="catalog-section"><div className="section-head"><div><span className="eyebrow">الكتالوج الكامل</span><h2>كل ما تحتاجه، بسعر واضح.</h2></div><div className="search-box"><Search size={18} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="ابحث باسم المنتج أو الفئة" /></div></div><div className="catalog-summary"><span>{visibleProducts.length} منتج</span><span className="line" /> <span>الأسعار تشمل ضريبة القيمة المضافة عند عرضها من المصدر</span></div><div className="product-grid">{displayedProducts.map((product) => <ProductCard key={product.id} product={product} onAdd={addToCart} onOpen={setSelectedProduct} />)}</div>{visibleProducts.length > displayedProducts.length && <div className="load-more-wrap"><span>عرض {displayedProducts.length} من {visibleProducts.length} منتج</span><button className="load-more" onClick={() => setShownProductCount((count) => Math.min(count + 24, visibleProducts.length))}>عرض منتجات إضافية <ChevronLeft size={17} /></button></div>}{visibleProducts.length === 0 && <div className="no-results"><Search size={28} /><p>لم نجد منتجًا مطابقًا. جرّب مصطلحًا آخر أو اختر «الكل».</p></div>}</section>
 
         <section id="solutions" className="solution-section"><div className="solution-intro"><span className="eyebrow light">من الفكرة إلى الاستخدام</span><h2>حلول تقنية تبدأ من احتياجك، لا من تعقيد المنتج.</h2></div><div className="solution-cards"><article><Camera /><h3>مراقبة بوضوح</h3><p>اختَر كاميرا داخلية أو خارجية مع تفاصيل تساعدك على المقارنة قبل القرار.</p></article><article><Wifi /><h3>اتصال بلا انقطاع</h3><p>شرائح بيانات وحلول اتصال بتفاصيل الصلاحية والسعة كما هي موضحة للمنتج.</p></article><article><Headphones /><h3>دعم قريب</h3><p>خبرة واضحة وتواصل مباشر لمساعدتك قبل الشراء وبعده.</p></article></div></section>
 
-        <section id="trust" className="trust-section"><div><span className="eyebrow">ثقة من أول نقرة</span><h2>لماذا إيقاع الحياة؟</h2></div><div className="trust-list"><span><BadgeCheck /> أسعار ظاهرة قبل الدفع</span><span><ShieldCheck /> دفع مشفّر عبر Stripe</span><span><Heart /> اختيار مبني على الاحتياج</span><span><PackageCheck /> طلبات محفوظة وقابلة للمتابعة</span></div></section>
+        <section id="trust" className="trust-section"><div><span className="eyebrow">ثقة من أول نقرة</span><h2>لماذا إيقاع الحياة؟</h2></div><div className="trust-list"><span><Award /> موزع معتمد من مزودي خدمات الاتصالات</span><span><BadgeCheck /> أسعار ظاهرة قبل الدفع</span><span><ShieldCheck /> دفع مشفّر عبر Stripe</span><span><Heart /> اختيار مبني على الاحتياج</span><span><PackageCheck /> طلبات محفوظة وقابلة للمتابعة</span></div></section>
       </main>
-      <footer><BrandMark /><div className="footer-company"><strong>شركة إيقاع الحياة</strong><p>إيقاع الحياة للتقنية — حلول تقنية تواكب يومك.</p></div><div className="business-details" aria-label="بيانات المنشأة"><span>السجل التجاري <b dir="ltr">7033944427</b></span><span>الرقم الضريبي <b dir="ltr">311685924700003</b></span></div><span className="copyright">جميع الحقوق محفوظة © 2026</span><figure className="payment-trust-image"><img src="/images/payment-trust.png" alt="صورة وسائل الدفع والتوثيق المقدمة من شركة إيقاع الحياة" /></figure></footer>
+      <footer><BrandMark /><div className="footer-company"><strong>شركة إيقاع الحياة</strong><p>إيقاع الحياة للتقنية — حلول تقنية تواكب يومك.</p><p className="footer-authorized"><Award size={14} /> موزع معتمد من مزودي خدمات الاتصالات</p></div><div className="business-details" aria-label="بيانات المنشأة"><span>السجل التجاري <b dir="ltr">7033944427</b></span><span>الرقم الضريبي <b dir="ltr">311685924700003</b></span></div><span className="copyright">جميع الحقوق محفوظة © 2026</span><figure className="payment-trust-image"><img src="/images/payment-trust.png" alt="صورة وسائل الدفع والتوثيق المقدمة من شركة إيقاع الحياة" /></figure></footer>
       <CartDrawer products={products} cart={cart} setCart={setCart} open={cartOpen} onClose={() => setCartOpen(false)} checkout={checkout} checkingOut={checkingOut} />
       <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} onAdd={addToCart} />
       {toast && <div className="toast"><BadgeCheck size={17} />{toast}</div>}
