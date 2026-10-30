@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Clock3, Mail, MapPin, MessageCircle } from 'lucide-react';
+import { Award, Clock3, Mail, MapPin, MessageCircle } from 'lucide-react';
 import Logo from './Logo';
 import { legalDocs } from '@/data/legal';
 import { storeCategories } from '@/lib/catalog';
@@ -42,6 +42,7 @@ export default function Footer() {
           <div><dt>السجل التجاري</dt><dd dir="ltr">{site.commercialRegistration}</dd></div>
           <div><dt>الرقم الضريبي</dt><dd dir="ltr">{site.vatNumber}</dd></div>
         </dl>
+        <span className="footer-authorized"><Award size={16} aria-hidden="true" /> {site.authorizedDistributor}</span>
         <a className="footer-mail" href={`mailto:${site.email}`}><Mail size={16} aria-hidden="true" /> {site.email}</a>
       </div>
 

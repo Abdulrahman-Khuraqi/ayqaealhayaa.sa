@@ -8,6 +8,8 @@ export const site = {
   payUrl: 'https://pay.ayqaealhayaa.sa',
   commercialRegistration: '7033944427',
   vatNumber: '311685924700003',
+  /** صفة الاعتماد: تظهر في الرئيسية والتذييل. */
+  authorizedDistributor: 'موزع معتمد من مزودي خدمات الاتصالات',
   vatRate: 0.15,
   email: 'cs@ayqaealhayaa.sa',
   phone: '0570070539',

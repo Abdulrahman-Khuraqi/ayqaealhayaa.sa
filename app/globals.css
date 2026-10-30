@@ -740,3 +740,18 @@ a.contact-card:hover { border-color: var(--bronze-500); }
 .showcase, .faq-main { grid-template-columns: minmax(0, 1fr); }
 .footer-mail { display: inline-flex; align-items: center; gap: .5rem; padding: .55rem 1rem; border-radius: 99px; border: 1px solid rgba(200, 138, 90, .4); color: var(--bronze-300); font-weight: 700; font-size: .9rem; }
 .footer-mail:hover { background: rgba(200, 138, 90, .12); }
+
+/* شريط الاعتماد: موزع معتمد من مزودي خدمات الاتصالات */
+.distributor-section { padding-bottom: 0; }
+.distributor-band { display: flex; align-items: center; gap: clamp(1rem, 3vw, 2rem); padding: clamp(20px, 3.5vw, 36px); border-radius: calc(var(--radius) + 6px); background: radial-gradient(70% 140% at 100% 0%, rgba(200, 138, 90, .28), transparent 60%), var(--ink-850); color: var(--text-light); border: 1px solid rgba(200, 138, 90, .4); box-shadow: var(--shadow-card); }
+.distributor-icon { flex: none; width: 64px; height: 64px; display: grid; place-items: center; border-radius: 50%; background: var(--bronze-500); color: #1d130e; box-shadow: 0 0 0 7px rgba(200, 138, 90, .18); }
+.distributor-copy { flex: 1; }
+.distributor-copy .kicker { color: var(--bronze-400); }
+.distributor-copy h2 { font-size: clamp(1.25rem, 2.6vw, 1.9rem); line-height: 1.45; }
+.distributor-copy p:not(.kicker) { margin-top: .4rem; color: var(--muted-light); }
+.distributor-seal { flex: none; display: inline-flex; align-items: center; gap: .45rem; padding: .6rem 1.1rem; border-radius: 99px; background: var(--bronze-500); color: #1d130e; font-weight: 700; font-size: .9rem; }
+.footer-authorized { display: inline-flex; align-items: center; gap: .5rem; color: var(--bronze-300); font-weight: 700; font-size: .9rem; }
+@media (max-width: 640px) {
+  .distributor-band { flex-direction: column; align-items: flex-start; }
+  .distributor-icon { width: 52px; height: 52px; }
+}

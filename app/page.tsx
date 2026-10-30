@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import {
-  ArrowLeft, Headset, MessageCircle, PackageCheck, Receipt, RotateCcw, ShieldCheck, Truck,
+  ArrowLeft, Award, BadgeCheck, Headset, MessageCircle, PackageCheck, Receipt, RotateCcw, ShieldCheck, Truck,
 } from 'lucide-react';
 import Faq from '@/components/Faq';
 import HeroScene from '@/components/HeroScene';
@@ -36,6 +36,7 @@ export default function HomePage() {
   const simCategory = getCategory('sim-cards');
   const simFrom = simCategory ? minPrice(productsIn(simCategory).filter((p) => p.available).map((p) => p.price)) : 0;
   const perks = [
+    { icon: Award, text: site.authorizedDistributor },
     { icon: Truck, text: site.shippingNotice },
     { icon: Receipt, text: 'فاتورة ضريبية لكل طلب' },
     { icon: RotateCcw, text: `استرجاع خلال ${site.returnDays} أيام` },
@@ -53,6 +54,20 @@ export default function HomePage() {
           {[...perks, ...perks].map(({ icon: PerkIcon, text }, i) => (
             <span key={i}><PerkIcon size={18} aria-hidden="true" /> {text}</span>
           ))}
+        </div>
+      </section>
+
+      <section className="section-tight section-sand distributor-section" aria-label="اعتماد الشركة">
+        <div className="container">
+          <div className="distributor-band" data-reveal>
+            <span className="distributor-icon"><Award size={30} aria-hidden="true" /></span>
+            <div className="distributor-copy">
+              <p className="kicker">اعتماد رسمي</p>
+              <h2>{site.legalName} {site.authorizedDistributor}</h2>
+              <p>نوفر شرائح وباقات الاتصال والبيانات عبر قنوات توزيع معتمدة، لتحصل على منتج أصلي وخدمة موثوقة.</p>
+            </div>
+            <span className="distributor-seal"><BadgeCheck size={18} aria-hidden="true" /> موزع معتمد</span>
+          </div>
         </div>
       </section>
 
